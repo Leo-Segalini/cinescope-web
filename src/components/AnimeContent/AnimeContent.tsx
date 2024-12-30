@@ -3,7 +3,7 @@
 import { Suspense } from 'react'
 import { Hero } from '@/components/Hero/Hero'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
-import { AnimeSlider } from './AnimeSlider'
+import { AnimeGrid } from '@/components/AnimeGrid/AnimeGrid'
 import type { TVShow } from '@/types/tmdb'
 
 interface AnimeContentProps {
@@ -19,9 +19,15 @@ export function AnimeContent({ data }: AnimeContentProps) {
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
-      <Hero media={data.popularAnime.results[0]} type="tv" />
+      <Hero 
+        title={data.popularAnime.results[0].name}
+        overview={data.popularAnime.results[0].overview}
+        backdropPath={data.popularAnime.results[0].backdrop_path}
+        type="tv"
+        id={data.popularAnime.results[0].id}
+      />
 
-      {/* Sliders Section */}
+      {/* Grids Section */}
       <div className="-mt-32 relative z-10">
         <Suspense
           fallback={
@@ -31,25 +37,25 @@ export function AnimeContent({ data }: AnimeContentProps) {
           }
         >
           {/* Animés Tendance */}
-          <AnimeSlider
+          <AnimeGrid
             title="Animés Tendance"
             items={data.trendingAnime.results}
           />
 
           {/* Animés Populaires */}
-          <AnimeSlider
+          <AnimeGrid
             title="Animés Populaires"
             items={data.popularAnime.results}
           />
 
           {/* Animés les Mieux Notés */}
-          <AnimeSlider
+          <AnimeGrid
             title="Animés les Mieux Notés"
             items={data.topRatedAnime.results}
           />
 
           {/* Nouveaux Animés */}
-          <AnimeSlider
+          <AnimeGrid
             title="Nouveaux Animés"
             items={data.newAnime.results}
           />
