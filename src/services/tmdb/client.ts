@@ -8,62 +8,90 @@ interface TMDBResponse<T> {
   total_results: number
 }
 
-export async function fetchFromTMDB<T>(endpoint: string, options: Record<string, string> = {}): Promise<TMDBResponse<T>> {
-  const params = new URLSearchParams({
-    api_key: TMDB_CONFIG.apiKey,
-    language: TMDB_CONFIG.defaultLanguage,
-    ...options,
-  })
+const TMDB_BASE_URL = process.env.NEXT_PUBLIC_TMDB_BASE_URL;
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const ANIMATION_GENRE_ID = 16;
 
-  const url = `${TMDB_CONFIG.baseUrl}${endpoint}?${params}`
-  const response = await fetch(url)
-  const data = await response.json()
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch from TMDB')
+class TMDBClient {
+  private async fetchFromTMDB(endpoint: string) {
+    const response = await fetch(
+      `${TMDB_BASE_URL}${endpoint}?api_key=${TMDB_API_KEY}&language=fr-FR`
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from TMDB');
+    }
+    return response.json();
   }
 
-  return data
-}
-
-export async function getTrendingMovies(page = 1) {
-  const params = {
-    page: page.toString(),
+  async getPopularAnime() {
+    const data = await this.fetchFromTMDB(
+      `/discover/tv?with_genres=${ANIMATION_GENRE_ID}&sort_by=popularity.desc`
+    );
+    return data.results;
   }
 
-  return fetchFromTMDB<Movie>('/trending/movie/week', params)
-}
-
-export async function getTrendingTVShows(page = 1) {
-  const params = {
-    page: page.toString(),
+  async getTrendingAnime() {
+    const data = await this.fetchFromTMDB(
+      `/trending/tv/week?with_genres=${ANIMATION_GENRE_ID}`
+    );
+    return data.results;
   }
 
-  return fetchFromTMDB<TVShow>('/trending/tv/week', params)
-}
-
-export async function getMovieDetails(id: number) {
-  return fetchFromTMDB<Movie>(`/movie/${id}`)
-}
-
-export async function getTVShowDetails(id: number) {
-  return fetchFromTMDB<TVShow>(`/tv/${id}`)
-}
-
-export async function searchMovies(query: string, page = 1) {
-  const params = {
-    query,
-    page: page.toString(),
+  async getTopRatedAnime() {
+    const data = await this.fetchFromTMDB(
+      `/discover/tv?with_genres=${ANIMATION_GENRE_ID}&sort_by=vote_average.desc&vote_count.gte=200`
+    );
+    return data.results;
   }
 
-  return fetchFromTMDB<Movie>('/search/movie', params)
-}
-
-export async function searchTVShows(query: string, page = 1) {
-  const params = {
-    query,
-    page: page.toString(),
+  async getNewAnime() {
+    const data = await this.fetchFromTMDB(
+      `/discover/tv?with_genres=${ANIMATION_GENRE_ID}&sort_by=first_air_date.desc`
+    );
+    return data.results;
   }
 
-  return fetchFromTMDB<TVShow>('/search/tv', params)
-} 
+  async getTrendingMovies(page = 1) {
+    const params = {
+      page: page.toString(),
+    }
+
+    return this.fetchFromTMDB<Movie>('/trending/movie/week', params)
+  }
+
+  async getTrendingTVShows(page = 1) {
+    const params = {
+      page: page.toString(),
+    }
+
+    return this.fetchFromTMDB<TVShow>('/trending/tv/week', params)
+  }
+
+  async getMovieDetails(id: number) {
+    return this.fetchFromTMDB<Movie>(`/movie/${id}`)
+  }
+
+  async getTVShowDetails(id: number) {
+    return this.fetchFromTMDB<TVShow>(`/tv/${id}`)
+  }
+
+  async searchMovies(query: string, page = 1) {
+    const params = {
+      query,
+      page: page.toString(),
+    }
+
+    return this.fetchFromTMDB<Movie>('/search/movie', params)
+  }
+
+  async searchTVShows(query: string, page = 1) {
+    const params = {
+      query,
+      page: page.toString(),
+    }
+
+    return this.fetchFromTMDB<TVShow>('/search/tv', params)
+  }
+}
+
+export const tmdbClient = new TMDBClient(); 
