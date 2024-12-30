@@ -1,6 +1,6 @@
 {
   "version": 2,
   "buildCommand": "NODE_ENV=production npm run build",
-  "installCommand": "NODE_ENV=production npm install --omit=dev",
+  "installCommand": "npm install",
   "framework": "nextjs"
 } 
