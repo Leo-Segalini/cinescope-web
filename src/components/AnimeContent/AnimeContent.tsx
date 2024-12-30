@@ -36,29 +36,31 @@ export function AnimeContent({ data }: AnimeContentProps) {
             </div>
           }
         >
-          {/* Animés Tendance */}
-          <AnimeGrid
-            title="Animés Tendance"
-            items={data.trendingAnime.results}
-          />
+          <div className="container mx-auto px-4 space-y-8">
+            {/* Animés Tendance */}
+            <AnimeGrid
+              title="Animés Tendance"
+              items={data.trendingAnime.results}
+            />
 
-          {/* Animés Populaires */}
-          <AnimeGrid
-            title="Animés Populaires"
-            items={data.popularAnime.results}
-          />
+            {/* Animés Populaires */}
+            <AnimeGrid
+              title="Animés Populaires"
+              items={data.popularAnime.results}
+            />
 
-          {/* Animés les Mieux Notés */}
-          <AnimeGrid
-            title="Animés les Mieux Notés"
-            items={data.topRatedAnime.results}
-          />
+            {/* Animés les Mieux Notés */}
+            <AnimeGrid
+              title="Animés les Mieux Notés"
+              items={data.topRatedAnime.results}
+            />
 
-          {/* Nouveaux Animés */}
-          <AnimeGrid
-            title="Nouveaux Animés"
-            items={data.newAnime.results}
-          />
+            {/* Nouveaux Animés */}
+            <AnimeGrid
+              title="Nouveaux Animés"
+              items={data.newAnime.results}
+            />
+          </div>
         </Suspense>
       </div>
     </div>
