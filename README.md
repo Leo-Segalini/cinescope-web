@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TMDB App
 
-## Getting Started
+Une application web moderne pour explorer les films, séries TV et animes, construite avec Next.js 13+, TypeScript et Tailwind CSS.
 
-First, run the development server:
+## 🌟 Fonctionnalités
 
+- 🎬 Exploration des films, séries TV et animes
+- 🔍 Recherche avancée
+- 📱 Design responsive
+- 🎨 Interface utilisateur moderne avec animations
+- 🌐 Support multilingue (FR)
+- 📺 Informations sur les plateformes de streaming
+- ⚡ Performance optimisée avec Next.js
+
+## 🚀 Technologies Utilisées
+
+- [Next.js 13+](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [TMDB API](https://www.themoviedb.org/documentation/api)
+
+## 📋 Prérequis
+
+- Node.js 18.x ou supérieur
+- npm ou yarn
+- Une clé API TMDB
+
+## ⚙️ Installation
+
+1. Clonez le dépôt :
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/votre-username/tmdb-app.git
+cd tmdb-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installez les dépendances :
+```bash
+npm install
+# ou
+yarn install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Créez un fichier `.env.local` à la racine du projet :
+```env
+NEXT_PUBLIC_TMDB_API_KEY=votre_clé_api_tmdb
+NEXT_PUBLIC_TMDB_BASE_URL=https://api.themoviedb.org/3
+NEXT_PUBLIC_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Lancez le serveur de développement :
+```bash
+npm run dev
+# ou
+yarn dev
+```
 
-## Learn More
+## 🔑 Configuration de l'API TMDB
 
-To learn more about Next.js, take a look at the following resources:
+1. Créez un compte sur [TMDB](https://www.themoviedb.org/)
+2. Allez dans les paramètres de votre compte
+3. Cliquez sur "API" dans le menu de gauche
+4. Demandez une nouvelle clé API (type "Developer")
+5. Remplissez le formulaire
+6. Copiez la clé API (v3 auth) dans votre fichier `.env.local`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Déploiement
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+L'application est optimisée pour être déployée sur [Vercel](https://vercel.com). Pour déployer :
 
-## Deploy on Vercel
+1. Créez un compte sur Vercel
+2. Importez votre projet depuis GitHub
+3. Configurez les variables d'environnement dans les paramètres du projet :
+   - `NEXT_PUBLIC_TMDB_API_KEY`
+4. Déployez !
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📁 Structure du Projet
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/                 # Pages de l'application
+├── components/          # Composants réutilisables
+├── config/             # Configuration de l'application
+├── services/           # Services (API, etc.)
+├── styles/             # Styles globaux
+├── types/              # Types TypeScript
+└── utils/              # Utilitaires
+```
+
+## 🧪 Tests
+
+Pour lancer les tests :
+```bash
+npm run test
+# ou
+yarn test
+```
+
+## 📝 License
+
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
+
+## 🙏 Remerciements
+
+- [TMDB](https://www.themoviedb.org/) pour leur excellente API
+- La communauté open source pour les outils incroyables
