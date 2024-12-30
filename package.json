@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
+    "postinstall": "[ -d '.git' ] && husky install || true",
     "test": "jest",
     "test:watch": "jest --watch",
     "format": "prettier --write .",

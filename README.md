@@ -71,8 +71,18 @@ L'application est optimisée pour être déployée sur [Vercel](https://vercel.c
 1. Créez un compte sur Vercel
 2. Importez votre projet depuis GitHub
 3. Configurez les variables d'environnement dans les paramètres du projet :
-   - `NEXT_PUBLIC_TMDB_API_KEY`
-4. Déployez !
+   - `NEXT_PUBLIC_TMDB_API_KEY` (créez un secret nommé `tmdb_api_key`)
+   - Les autres variables sont configurées automatiquement
+4. Le déploiement se fera automatiquement à chaque push sur la branche principale
+
+### Résolution des problèmes de déploiement
+
+Si vous rencontrez des erreurs lors du déploiement :
+
+1. Assurez-vous que toutes les variables d'environnement sont correctement configurées
+2. Vérifiez que le fichier `vercel.json` est présent à la racine du projet
+3. Les dépendances de développement sont automatiquement omises en production
+4. Husky est configuré pour ne s'installer que dans un environnement de développement
 
 ## 📁 Structure du Projet
 
