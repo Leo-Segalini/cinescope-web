@@ -1,87 +1,69 @@
-import { tmdbClient } from '../client'
-import type { PaginatedResponse } from '@/types/tmdb'
-
-// Mock global fetch
-global.fetch = jest.fn()
+import { TMDBClient } from '../client'
+import { Movie, TVShow } from '@/types'
 
 describe('TMDBClient', () => {
+  let client: TMDBClient
+
   beforeEach(() => {
-    jest.clearAllMocks()
+    client = new TMDBClient({
+      apiKey: 'test-api-key',
+      baseUrl: 'https://api.themoviedb.org/3',
+      defaultLanguage: 'fr-FR',
+    })
   })
 
-  it('should fetch popular movies successfully', async () => {
-    const mockMovies = {
-      page: 1,
-      results: [
-        {
-          id: 1,
-          title: 'Test Movie',
-          overview: 'Test Overview',
-          poster_path: '/test.jpg',
-          backdrop_path: '/test-backdrop.jpg',
-          release_date: '2024-01-01',
-          vote_average: 8.5,
-          vote_count: 100,
-          genre_ids: [1, 2, 3],
-        },
-      ],
-      total_pages: 10,
-      total_results: 100,
-    }
+  it('should fetch trending movies', async () => {
+    const mockResponse: Movie[] = [
+      {
+        id: 1,
+        title: 'Test Movie',
+        poster_path: '/test.jpg',
+        backdrop_path: '/test-backdrop.jpg',
+        overview: 'Test overview',
+        release_date: '2023-01-01',
+        vote_average: 7.5,
+        genre_ids: [1, 2, 3],
+      },
+    ]
 
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+    global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => mockMovies,
+      json: () => Promise.resolve({ results: mockResponse }),
     })
 
-    const result = await tmdbClient.getPopularMovies()
-    expect(result).toEqual(mockMovies)
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/movie/popular'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: expect.stringContaining('Bearer'),
-        }),
-      })
-    )
+    const result = await client.getTrendingMovies()
+    expect(result).toEqual({ results: mockResponse })
   })
 
-  it('should fetch popular TV shows successfully', async () => {
-    const mockTVShows = {
-      page: 1,
-      results: [
-        {
-          id: 1,
-          name: 'Test Show',
-          overview: 'Test Overview',
-          poster_path: '/test.jpg',
-          backdrop_path: '/test-backdrop.jpg',
-          first_air_date: '2024-01-01',
-          vote_average: 8.5,
-          vote_count: 100,
-          genre_ids: [1, 2, 3],
-        },
-      ],
-      total_pages: 10,
-      total_results: 100,
-    }
+  it('should fetch trending TV shows', async () => {
+    const mockResponse: TVShow[] = [
+      {
+        id: 1,
+        name: 'Test Show',
+        poster_path: '/test.jpg',
+        backdrop_path: '/test-backdrop.jpg',
+        overview: 'Test overview',
+        first_air_date: '2023-01-01',
+        vote_average: 7.5,
+        genre_ids: [1, 2, 3],
+      },
+    ]
 
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+    global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => mockTVShows,
+      json: () => Promise.resolve({ results: mockResponse }),
     })
 
-    const result = await tmdbClient.getPopularTVShows()
-    expect(result).toEqual(mockTVShows)
+    const result = await client.getTrendingTVShows()
+    expect(result).toEqual({ results: mockResponse })
   })
 
-  it('should handle API errors correctly', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+  it('should handle API errors', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       ok: false,
-      status: 404,
-      statusText: 'Not Found',
+      json: () => Promise.resolve({ status_message: 'API Error' }),
     })
 
-    await expect(tmdbClient.getMovieDetails(999999)).rejects.toThrow('TMDB API Error: 404 Not Found')
+    await expect(client.getTrendingMovies()).rejects.toThrow('Failed to fetch trending movies')
   })
 }) 

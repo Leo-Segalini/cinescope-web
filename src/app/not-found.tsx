@@ -48,23 +48,12 @@ export default function NotFound() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            404
-          </h1>
-          <h2 className="text-2xl text-white mb-8">
-            Coupez ! Cette scène n'existe pas.
-          </h2>
-        </motion.div>
-
-        {/* Movie Quote */}
-        <motion.div
-          className="max-w-md mx-auto mb-8 p-6 bg-white/5 rounded-lg backdrop-blur-sm"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <p className="text-lg text-gray-300 italic mb-2">"{randomQuote.quote}"</p>
-          <p className="text-sm text-gray-400">— {randomQuote.movie}</p>
+          <h1 className="text-6xl font-bold text-red-600 mb-4">404</h1>
+          <p className="text-2xl text-gray-300 mb-8">Cette scène n&apos;existe pas</p>
+          <div className="text-lg text-gray-400 mb-8">
+            <p className="italic">&quot;{randomQuote.quote}&quot;</p>
+            <p className="mt-2">- {randomQuote.movie}</p>
+          </div>
         </motion.div>
 
         {/* Action Button */}
@@ -77,7 +66,7 @@ export default function NotFound() {
             href="/"
             className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold transition-transform hover:scale-105"
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </Link>
         </motion.div>
       </div>

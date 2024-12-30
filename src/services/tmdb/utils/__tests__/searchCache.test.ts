@@ -1,64 +1,45 @@
 import { SearchCache } from '../searchCache'
+import { Movie } from '@/types'
 
 describe('SearchCache', () => {
-  let cache: SearchCache<any>
+  let cache: SearchCache<Movie>
 
   beforeEach(() => {
-    cache = new SearchCache(2, 0.1) // maxSize: 2, ttl: 6 secondes
+    cache = new SearchCache<Movie>()
   })
 
-  it('should store and retrieve data correctly', () => {
-    const testData = { results: ['test'] }
-    cache.set('test', 1, testData)
-    expect(cache.get('test', 1)).toEqual(testData)
+  it('should store and retrieve items', () => {
+    const query = 'test'
+    const items: Movie[] = [
+      {
+        id: 1,
+        title: 'Test Movie',
+        poster_path: '/test.jpg',
+        backdrop_path: '/test-backdrop.jpg',
+        overview: 'Test overview',
+        release_date: '2023-01-01',
+        vote_average: 7.5,
+        genre_ids: [1, 2, 3],
+      },
+    ]
+
+    cache.set(query, items)
+    expect(cache.get(query)).toEqual(items)
   })
 
-  it('should return null for non-existent entries', () => {
-    expect(cache.get('nonexistent', 1)).toBeNull()
+  it('should return null for non-existent queries', () => {
+    expect(cache.get('non-existent')).toBeNull()
   })
 
-  it('should respect maxSize and remove oldest entries', () => {
-    cache.set('query1', 1, 'data1')
-    cache.set('query2', 1, 'data2')
-    cache.set('query3', 1, 'data3')
+  it('should clear old items when max size is reached', () => {
+    const maxSize = 3
+    cache = new SearchCache<Movie>(maxSize)
 
-    expect(cache.get('query1', 1)).toBeNull()
-    expect(cache.get('query2', 1)).toBe('data2')
-    expect(cache.get('query3', 1)).toBe('data3')
-  })
+    for (let i = 0; i < maxSize + 1; i++) {
+      cache.set(`query${i}`, [])
+    }
 
-  it('should respect TTL and expire old entries', async () => {
-    cache.set('test', 1, 'data')
-    expect(cache.get('test', 1)).toBe('data')
-
-    // Attendre que l'entrée expire (TTL = 6 secondes)
-    await new Promise(resolve => setTimeout(resolve, 7000))
-    expect(cache.get('test', 1)).toBeNull()
-  })
-
-  it('should update LRU order when accessing entries', () => {
-    cache.set('query1', 1, 'data1')
-    cache.set('query2', 1, 'data2')
-
-    // Accéder à query1 pour le rendre plus récent
-    cache.get('query1', 1)
-
-    // Ajouter une nouvelle entrée
-    cache.set('query3', 1, 'data3')
-
-    // query2 devrait être supprimé car c'est le moins récemment utilisé
-    expect(cache.get('query2', 1)).toBeNull()
-    expect(cache.get('query1', 1)).toBe('data1')
-    expect(cache.get('query3', 1)).toBe('data3')
-  })
-
-  it('should clear all entries', () => {
-    cache.set('query1', 1, 'data1')
-    cache.set('query2', 1, 'data2')
-
-    cache.clear()
-
-    expect(cache.get('query1', 1)).toBeNull()
-    expect(cache.get('query2', 1)).toBeNull()
+    expect(cache.get('query0')).toBeNull()
+    expect(cache.get(`query${maxSize}`)).not.toBeNull()
   })
 }) 

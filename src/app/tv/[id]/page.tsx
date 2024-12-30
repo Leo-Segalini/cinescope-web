@@ -9,9 +9,9 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 
 interface TVShowPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 interface WatchProviders {
@@ -34,7 +34,8 @@ export default function TVShowPage({ params }: TVShowPageProps) {
       try {
         setIsLoading(true)
         setError(null)
-        const showId = parseInt(params.id)
+        const resolvedParams = await params
+        const showId = parseInt(resolvedParams.id)
 
         const [showData, similarShowsData, watchProvidersData] = await Promise.all([
           fetchTVShowDetails(showId),
@@ -54,7 +55,7 @@ export default function TVShowPage({ params }: TVShowPageProps) {
     }
 
     fetchData()
-  }, [params.id])
+  }, [params])
 
   if (isLoading) {
     return (
@@ -95,10 +96,11 @@ export default function TVShowPage({ params }: TVShowPageProps) {
         >
           {/* Poster */}
           <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-            <img
+            <Image
               src={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
               alt={show.name}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
 

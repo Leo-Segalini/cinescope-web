@@ -1,8 +1,6 @@
-import { tmdbClient } from '@/services/tmdb/client'
-
 export const metadata = {
   title: 'Animés | TMDB App',
-  description: 'Découvrez notre sélection d\'animés populaires, tendances et nouveaux.',
+  description: 'Découvrez les meilleurs animés japonais et films d\'animation.',
 }
 
 export async function getAnimePageData() {

@@ -1,12 +1,25 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Hero } from '@/components/Hero/Hero'
 import { MovieGrid } from '@/components/MovieGrid/MovieGrid'
 import { TVShowGrid } from '@/components/TVShowGrid/TVShowGrid'
 import { fetchAnimatedMovies, fetchAnime, fetchTVShowWatchProviders } from '@/services/api'
 import { Movie, TVShow, WatchProvider } from '@/types'
 import { motion } from 'framer-motion'
+
+interface WatchProviderResponse {
+  results: {
+    FR?: {
+      flatrate?: WatchProvider[]
+    }
+  }
+}
+
+interface WatchProviderResult {
+  id: number
+  providers: WatchProvider[]
+}
 
 export default function AnimePage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -29,22 +42,29 @@ export default function AnimePage() {
         ])
 
         // Récupérer les plateformes de streaming pour chaque anime
-        const watchProvidersPromises = animeShows.map(show => 
+        const watchProvidersPromises = animeShows.map((show: TVShow) => 
           fetchTVShowWatchProviders(show.id)
-            .then(data => ({ id: show.id, providers: data.results.FR?.flatrate || [] }))
+            .then((data: WatchProviderResponse) => ({ 
+              id: show.id, 
+              providers: data.results.FR?.flatrate || [] 
+            }))
         )
         const watchProvidersResults = await Promise.all(watchProvidersPromises)
         
         // Créer un objet avec les plateformes de streaming pour chaque anime
-        const watchProviders = watchProvidersResults.reduce((acc, { id, providers }) => {
+        const watchProviders = watchProvidersResults.reduce((acc: { [key: number]: WatchProvider[] }, { id, providers }: WatchProviderResult) => {
           acc[id] = providers
           return acc
-        }, {} as { [key: number]: WatchProvider[] })
+        }, {})
 
         // Trier les animes pour mettre en avant ceux disponibles sur Crunchyroll
-        const sortedAnimeShows = animeShows.sort((a, b) => {
-          const aHasCrunchyroll = watchProviders[a.id]?.some(p => p.provider_name.toLowerCase().includes('crunchyroll')) || false
-          const bHasCrunchyroll = watchProviders[b.id]?.some(p => p.provider_name.toLowerCase().includes('crunchyroll')) || false
+        const sortedAnimeShows = animeShows.sort((a: TVShow, b: TVShow) => {
+          const aHasCrunchyroll = watchProviders[a.id]?.some((p: WatchProvider) => 
+            p.provider_name.toLowerCase().includes('crunchyroll')
+          ) || false
+          const bHasCrunchyroll = watchProviders[b.id]?.some((p: WatchProvider) => 
+            p.provider_name.toLowerCase().includes('crunchyroll')
+          ) || false
           
           if (aHasCrunchyroll && !bHasCrunchyroll) return -1
           if (!aHasCrunchyroll && bHasCrunchyroll) return 1
@@ -111,7 +131,7 @@ export default function AnimePage() {
           )}
 
           {data.animatedMovies.length > 0 && (
-            <MovieGrid title="Films d'Animation" items={data.animatedMovies} />
+            <MovieGrid title="Films d&apos;Animation" items={data.animatedMovies} />
           )}
         </motion.div>
       </div>

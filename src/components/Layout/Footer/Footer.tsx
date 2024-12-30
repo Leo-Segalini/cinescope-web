@@ -1,78 +1,86 @@
-export const Footer = () => {
-  const currentYear = new Date().getFullYear()
+'use client'
 
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+
+export function Footer() {
   return (
-    <footer className="bg-gray-900 py-8">
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* À propos */}
+    <footer className="bg-black py-8">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="grid gap-8 md:grid-cols-3"
+        >
+          {/* Navigation */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-white">À propos</h2>
-            <p className="text-gray-400">
-              Cette application utilise l&apos;API TMDB pour fournir des informations sur les films et
-              séries TV. Toutes les données sont fournies par The Movie Database.
-            </p>
-          </div>
-
-          {/* Navigation rapide */}
-          <div>
-            <h2 className="mb-4 text-lg font-semibold text-white">Navigation</h2>
+            <h3 className="text-lg font-semibold text-white mb-4">Navigation</h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="/movies"
-                  className="text-gray-400 transition-colors hover:text-white"
+                <Link
+                  href="/"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
                   Films
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/tv" className="text-gray-400 transition-colors hover:text-white">
-                  Séries TV
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/search"
-                  className="text-gray-400 transition-colors hover:text-white"
+                <Link
+                  href="/tv"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
-                  Recherche
-                </a>
+                  Séries TV
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/anime"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Anime
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Légal */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-white">Légal</h2>
+            <h3 className="text-lg font-semibold text-white mb-4">Légal</h3>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="/privacy"
-                  className="text-gray-400 transition-colors hover:text-white"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
                   Politique de confidentialité
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/terms"
-                  className="text-gray-400 transition-colors hover:text-white"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
                   Conditions d&apos;utilisation
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
-        </div>
+
+          {/* À propos */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">À propos</h3>
+            <p className="text-gray-400">
+              Ce site utilise l&apos;API TMDB pour fournir des informations sur les films,
+              séries et animes. Toutes les données sont fournies par TMDB.
+            </p>
+          </div>
+        </motion.div>
 
         {/* Copyright */}
-        <div className="mt-8 border-t border-gray-800 pt-8 text-center">
-          <p className="text-sm text-gray-400">
-            © {currentYear} TMDB App. Tous droits réservés.
-          </p>
-          <p className="mt-2 text-xs text-gray-500">
-            Ce produit utilise l&apos;API TMDB mais n&apos;est pas approuvé ou certifié par TMDB.
+        <div className="mt-8 pt-8 border-t border-gray-800">
+          <p className="text-center text-gray-400">
+            © {new Date().getFullYear()} TMDB App. Tous droits réservés.
           </p>
         </div>
       </div>

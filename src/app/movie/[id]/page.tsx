@@ -9,9 +9,9 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 
 interface MoviePageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 interface WatchProviders {
@@ -34,7 +34,8 @@ export default function MoviePage({ params }: MoviePageProps) {
       try {
         setIsLoading(true)
         setError(null)
-        const movieId = parseInt(params.id)
+        const resolvedParams = await params
+        const movieId = parseInt(resolvedParams.id)
 
         const [movieData, similarMoviesData, watchProvidersData] = await Promise.all([
           fetchMovieDetails(movieId),
@@ -54,7 +55,7 @@ export default function MoviePage({ params }: MoviePageProps) {
     }
 
     fetchData()
-  }, [params.id])
+  }, [params])
 
   if (isLoading) {
     return (
@@ -95,10 +96,11 @@ export default function MoviePage({ params }: MoviePageProps) {
         >
           {/* Poster */}
           <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-            <img
+            <Image
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie.title}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
 
