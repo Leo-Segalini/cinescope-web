@@ -1,0 +1,22 @@
+import { tmdbClient } from '@/services/tmdb/client'
+
+export const metadata = {
+  title: 'Animés | TMDB App',
+  description: 'Découvrez notre sélection d\'animés populaires, tendances et nouveaux.',
+}
+
+export async function getAnimePageData() {
+  const [popularAnime, trendingAnime, topRatedAnime, newAnime] = await Promise.all([
+    tmdbClient.getPopularAnime(),
+    tmdbClient.getTrendingAnime(),
+    tmdbClient.getTopRatedAnime(),
+    tmdbClient.getNewAnime(),
+  ])
+
+  return {
+    popularAnime,
+    trendingAnime,
+    topRatedAnime,
+    newAnime,
+  }
+} 

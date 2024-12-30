@@ -37,16 +37,30 @@ export interface Genre {
 export interface MovieDetails extends Movie {
   genres: Genre[]
   runtime: number
+  tagline?: string
   budget: number
   revenue: number
   status: string
-  tagline: string | null
 }
 
 export interface TVShowDetails extends TVShow {
   genres: Genre[]
   number_of_seasons: number
   number_of_episodes: number
+  tagline?: string
   status: string
-  tagline: string | null
+  created_by: {
+    id: number
+    name: string
+  }[]
+  last_episode_to_air?: {
+    season_number: number
+    episode_number: number
+    name: string
+    air_date: string
+  }
+}
+
+export interface GenresResponse {
+  genres: Genre[]
 } 

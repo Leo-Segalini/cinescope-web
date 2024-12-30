@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SearchBar } from '../SearchBar'
-import { useRouter } from 'next/router'
 
-// Mock next/router
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
 }))
 
 describe('SearchBar', () => {

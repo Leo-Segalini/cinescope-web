@@ -54,4 +54,54 @@ describe('TMDB API Integration Tests', () => {
       })
     )
   })
+
+  describe('Search Cache Integration', () => {
+    beforeEach(() => {
+      tmdbClient.clearSearchCache()
+    })
+
+    it('should cache search results and return them on subsequent calls', async () => {
+      // Premier appel - devrait faire un appel API
+      const firstCallStart = Date.now()
+      const firstResults = await tmdbClient.searchMulti('Matrix')
+      const firstCallDuration = Date.now() - firstCallStart
+
+      // Deuxième appel - devrait utiliser le cache
+      const secondCallStart = Date.now()
+      const secondResults = await tmdbClient.searchMulti('Matrix')
+      const secondCallDuration = Date.now() - secondCallStart
+
+      // Le deuxième appel devrait être significativement plus rapide
+      expect(secondCallDuration).toBeLessThan(firstCallDuration)
+      // Les résultats devraient être identiques
+      expect(secondResults).toEqual(firstResults)
+    })
+
+    it('should make new API call for different pages of same query', async () => {
+      const page1Results = await tmdbClient.searchMulti('Star Wars', 1)
+      const page2Results = await tmdbClient.searchMulti('Star Wars', 2)
+
+      expect(page1Results.page).toBe(1)
+      expect(page2Results.page).toBe(2)
+      expect(page1Results.results).not.toEqual(page2Results.results)
+    })
+
+    it('should make new API call for different search queries', async () => {
+      const query1Results = await tmdbClient.searchMulti('Matrix')
+      const query2Results = await tmdbClient.searchMulti('Star Wars')
+
+      expect(query1Results.results).not.toEqual(query2Results.results)
+    })
+
+    it('should handle empty search results correctly', async () => {
+      const results = await tmdbClient.searchMulti('xxxxxxxxxxxxxxxxxxx')
+      expect(results.results).toHaveLength(0)
+      expect(results.total_results).toBe(0)
+
+      // Vérifier que les résultats vides sont aussi mis en cache
+      const cachedResults = await tmdbClient.searchMulti('xxxxxxxxxxxxxxxxxxx')
+      expect(cachedResults.results).toHaveLength(0)
+      expect(cachedResults.total_results).toBe(0)
+    })
+  })
 }) 

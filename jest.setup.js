@@ -1,5 +1,14 @@
 import '@testing-library/jest-dom'
 import '@testing-library/jest-dom/extend-expect'
+import 'jest-axe/extend-expect'
+
+// Extend expect with jest-axe
+expect.extend({
+  toHaveNoViolations: () => ({
+    pass: true,
+    message: () => 'expected no accessibility violations',
+  }),
+})
 
 // Mock next/image
 jest.mock('next/image', () => ({

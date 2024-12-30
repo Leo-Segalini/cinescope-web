@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg bg-gray-800 p-8 text-center">
           <h2 className="mb-4 text-2xl font-bold text-white">
-            Oups ! Quelque chose s'est mal passé
+            Oups ! Quelque chose s&apos;est mal passé
           </h2>
           <p className="mb-6 text-gray-300">
             Une erreur est survenue lors du chargement de ce contenu.
