@@ -7,21 +7,30 @@ interface TMDBResponse<T> {
   total_results: number
 }
 
-const TMDB_BASE_URL = process.env.NEXT_PUBLIC_TMDB_API_BASE_URL;
-const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+// Vérification des variables d'environnement
+const envApiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const envBaseUrl = process.env.NEXT_PUBLIC_TMDB_API_BASE_URL;
 
-if (!TMDB_BASE_URL || !TMDB_API_KEY) {
+if (!envApiKey || !envBaseUrl) {
   throw new Error('TMDB environment variables are not properly configured');
 }
 
+// Définition des constantes après vérification
+const TMDB_BASE_URL: string = envBaseUrl;
+const TMDB_API_KEY: string = envApiKey;
 const ANIMATION_GENRE_ID = 16;
 
 class TMDBClient {
   private async fetchFromTMDB<T>(endpoint: string, additionalParams: Record<string, string> = {}): Promise<TMDBResponse<T>> {
-    const params = new URLSearchParams({
-      api_key: TMDB_API_KEY,
-      language: 'fr-FR',
-      ...additionalParams
+    const params = new URLSearchParams();
+    
+    // Ajout des paramètres de base
+    params.append('api_key', TMDB_API_KEY);
+    params.append('language', 'fr-FR');
+    
+    // Ajout des paramètres additionnels
+    Object.entries(additionalParams).forEach(([key, value]) => {
+      params.append(key, value);
     });
 
     const url = `${TMDB_BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}${params.toString()}`;

@@ -40,8 +40,11 @@ export class SearchCache<T> {
 
     // Si le cache est plein, supprimer l'entrée la plus ancienne
     if (this.cache.size >= this.maxSize) {
-      const oldestKey = this.cache.keys().next().value
-      this.cache.delete(oldestKey)
+      // Convertir l'itérateur en tableau pour un accès sûr
+      const keys = Array.from(this.cache.keys())
+      if (keys.length > 0) {
+        this.cache.delete(keys[0])
+      }
     }
 
     this.cache.set(key, {

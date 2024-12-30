@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MediaGrid } from '@/components/MediaGrid/MediaGrid'
 import { searchMedia } from '@/services/api'
 import { Movie, TVShow } from '@/types'
+import { useEffect, useState } from 'react'
 
-export default function SearchPage() {
+function SearchResults() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q')
   const [results, setResults] = useState<(Movie | TVShow)[]>([])
@@ -53,22 +54,36 @@ export default function SearchPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">
-          {query ? (
-            <>Résultats pour &quot;{query}&quot;</>
-          ) : (
-            'Veuillez saisir un terme de recherche'
-          )}
-        </h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-white mb-8">
+        {query ? (
+          <>Résultats pour &quot;{query}&quot;</>
+        ) : (
+          'Veuillez saisir un terme de recherche'
+        )}
+      </h1>
 
-        {results.length > 0 ? (
-          <MediaGrid items={results} />
-        ) : query ? (
-          <div className="text-white text-xl">Aucun résultat trouvé</div>
-        ) : null}
-      </div>
+      {results.length > 0 ? (
+        <MediaGrid items={results} />
+      ) : query ? (
+        <div className="text-white text-xl">Aucun résultat trouvé</div>
+      ) : null}
+    </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+            <div className="text-white text-2xl">Chargement...</div>
+          </div>
+        }
+      >
+        <SearchResults />
+      </Suspense>
     </main>
   )
 } 
