@@ -1,112 +1,73 @@
-# TMDB App
+# CinéScope
 
-Une application web moderne pour explorer les films, séries TV et animes, construite avec Next.js 13+, TypeScript et Tailwind CSS.
+CinéScope est une application web moderne pour explorer les films, séries TV et animes. Elle utilise l'API TMDB pour fournir des informations détaillées sur les contenus audiovisuels et leurs disponibilités sur les différentes plateformes de streaming.
 
 ## 🌟 Fonctionnalités
 
 - 🎬 Exploration des films, séries TV et animes
-- 🔍 Recherche avancée
-- 📱 Design responsive
-- 🎨 Interface utilisateur moderne avec animations
-- 🌐 Support multilingue (FR)
+- 🔍 Recherche avancée avec filtres (plateformes, genres)
+- 📱 Interface responsive et moderne
+- 🎨 Design élégant avec animations fluides
 - 📺 Informations sur les plateformes de streaming
-- ⚡ Performance optimisée avec Next.js
+- 🎭 Détails complets sur les acteurs et leurs filmographies
+- 🎥 Bandes-annonces et vidéos
+- 📱 Version mobile native en développement
 
-## 🚀 Technologies Utilisées
+## 🛠️ Technologies Utilisées
 
-- [Next.js 13+](https://nextjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [TMDB API](https://www.themoviedb.org/documentation/api)
+- **Frontend:**
+  - Next.js 14 (App Router)
+  - TypeScript
+  - Tailwind CSS
+  - Framer Motion
+  - React Query
 
-## 📋 Prérequis
+- **API:**
+  - TMDB API (The Movie Database)
 
-- Node.js 18.x ou supérieur
-- npm ou yarn
-- Une clé API TMDB
+## 📦 Installation
 
-## ⚙️ Installation
-
-1. Clonez le dépôt :
+1. Clonez le repository :
 ```bash
-git clone https://github.com/votre-username/tmdb-app.git
+git clone https://github.com/votre-username/cinescope.git
 cd tmdb-app
 ```
 
 2. Installez les dépendances :
 ```bash
 npm install
-# ou
-yarn install
 ```
 
-3. Créez un fichier `.env.local` à la racine du projet :
+3. Créez un fichier `.env.local` à la racine du projet avec vos clés API :
 ```env
 NEXT_PUBLIC_TMDB_API_KEY=votre_clé_api_tmdb
-NEXT_PUBLIC_TMDB_BASE_URL=https://api.themoviedb.org/3
-NEXT_PUBLIC_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
+NEXT_PUBLIC_TMDB_API_BASE_URL=https://api.themoviedb.org/3
 ```
 
 4. Lancez le serveur de développement :
 ```bash
 npm run dev
-# ou
-yarn dev
 ```
-
-## 🔑 Configuration de l'API TMDB
-
-1. Créez un compte sur [TMDB](https://www.themoviedb.org/)
-2. Allez dans les paramètres de votre compte
-3. Cliquez sur "API" dans le menu de gauche
-4. Demandez une nouvelle clé API (type "Developer")
-5. Remplissez le formulaire
-6. Copiez la clé API (v3 auth) dans votre fichier `.env.local`
 
 ## 🚀 Déploiement
 
-L'application est optimisée pour être déployée sur [Vercel](https://vercel.com). Pour déployer :
+L'application est configurée pour être déployée sur Vercel. Pour déployer :
 
-1. Créez un compte sur Vercel
-2. Importez votre projet depuis GitHub
-3. Configurez les variables d'environnement dans les paramètres du projet :
-   - `NEXT_PUBLIC_TMDB_API_KEY` (créez un secret nommé `tmdb_api_key`)
-   - Les autres variables sont configurées automatiquement
-4. Le déploiement se fera automatiquement à chaque push sur la branche principale
+1. Connectez-vous à Vercel
+2. Importez votre projet GitHub
+3. Configurez vos variables d'environnement
+4. Déployez !
 
-### Résolution des problèmes de déploiement
+## 📱 Version Mobile
 
-Si vous rencontrez des erreurs lors du déploiement :
+Une version mobile native (iOS et Android) est en cours de développement. Consultez le fichier [DEVBOOKAPP.md](DEVBOOKAPP.md) pour plus d'informations sur le développement mobile.
 
-1. Assurez-vous que toutes les variables d'environnement sont correctement configurées
-2. Vérifiez que le fichier `vercel.json` est présent à la racine du projet
-3. Les dépendances de développement sont automatiquement omises en production
-4. Husky est configuré pour ne s'installer que dans un environnement de développement
+## 🔒 Mentions Légales
 
-## 📁 Structure du Projet
+- [Mentions légales](https://cinescope.fr/mentions-legales)
+- [Conditions d'utilisation](https://cinescope.fr/conditions-utilisation)
 
-```
-src/
-├── app/                 # Pages de l'application
-├── components/          # Composants réutilisables
-├── config/             # Configuration de l'application
-├── services/           # Services (API, etc.)
-├── styles/             # Styles globaux
-├── types/              # Types TypeScript
-└── utils/              # Utilitaires
-```
-
-## 🧪 Tests
-
-Pour lancer les tests :
-```bash
-npm run test
-# ou
-yarn test
-```
-
-## 📝 License
+## 📄 Licence
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
@@ -117,4 +78,4 @@ Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou un
 ## 🙏 Remerciements
 
 - [TMDB](https://www.themoviedb.org/) pour leur excellente API
-- La communauté open source pour les outils incroyables
+- La communauté open source pour les outils et bibliothèques utilisés
