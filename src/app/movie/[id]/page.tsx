@@ -75,7 +75,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       {/* Hero Section avec backdrop */}
-      <div className="md:relative h-full md:h-[80vh] min-h-[500px] bottom-0">
+      <div className="relative h-screen md:h-[80vh] min-h-[500px] bottom-0">
         {movie.backdrop_path && (
           <>
             <Image
