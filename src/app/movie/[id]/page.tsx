@@ -164,7 +164,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
                 {item.label}
                 {activeSection === item.id && (
                   <motion.div
-                    className="md:absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
                     layoutId="activeSection"
                   />
                 )}
