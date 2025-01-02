@@ -78,7 +78,7 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       {/* Hero Section avec backdrop */}
-      <div className="relative h-[100%] md:h-[80vh] min-h-[500px]">
+      <div className="relative h-full md:h-[80vh] min-h-[500px]">
         {tvShow.backdrop_path && (
           <>
             <Image
