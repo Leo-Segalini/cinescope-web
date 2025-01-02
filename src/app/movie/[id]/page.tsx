@@ -85,11 +85,11 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
               className="object-cover"
               priority
             />
-            <div className="md:absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
           </>
         )}
 
-        <div className="md:absolute inset-0 flex items-end">
+        <div className="absolute inset-0 flex items-end">
           <div className="container mx-auto px-4 pb-12 md:pb-16">
             <motion.div
               className="grid gap-8 md:grid-cols-[300px,1fr]"
