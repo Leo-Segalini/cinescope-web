@@ -75,7 +75,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       {/* Hero Section avec backdrop */}
-      <div className="relative h-auto md:h-[80vh] min-h-[500px] bottom-0">
+      <div className="md:relative h-full md:h-[80vh] min-h-[500px] bottom-0">
         {movie.backdrop_path && (
           <>
             <Image
@@ -85,11 +85,11 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+            <div className="md:absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
           </>
         )}
 
-        <div className="absolute inset-0 flex items-end">
+        <div className="md:absolute inset-0 flex items-end">
           <div className="container mx-auto px-4 pb-12 md:pb-16">
             <motion.div
               className="grid gap-8 md:grid-cols-[300px,1fr]"
@@ -164,7 +164,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
                 {item.label}
                 {activeSection === item.id && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+                    className="md:absolute bottom-0 left-0 right-0 h-0.5 bg-white"
                     layoutId="activeSection"
                   />
                 )}
