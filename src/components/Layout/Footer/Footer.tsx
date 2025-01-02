@@ -50,15 +50,15 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/privacy"
+                  href="/mentions-legales"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
-                  Politique de confidentialité
+                  Mentions légales
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/terms"
+                  href="/conditions-utilisation"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   Conditions d&apos;utilisation
@@ -71,16 +71,26 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">À propos</h3>
             <p className="text-gray-400">
-              Ce site utilise l&apos;API TMDB pour fournir des informations sur les films,
+              CinéScope utilise l&apos;API TMDB pour fournir des informations sur les films,
               séries et animes. Toutes les données sont fournies par TMDB.
             </p>
+            <div className="mt-4">
+              <a
+                href="https://www.themoviedb.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Powered by TMDB
+              </a>
+            </div>
           </div>
         </motion.div>
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-gray-800">
           <p className="text-center text-gray-400">
-            © {new Date().getFullYear()} TMDB App. Tous droits réservés.
+            © {new Date().getFullYear()} CinéScope. Tous droits réservés.
           </p>
         </div>
       </div>

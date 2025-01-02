@@ -459,14 +459,14 @@ export class TMDBClient {
   // Constantes pour les IDs des fournisseurs de streaming
   static readonly PROVIDERS = {
     NETFLIX: 8,
-    AMAZON_PRIME: 9,
     DISNEY_PLUS: 337,
+    AMAZON_PRIME: 119,
     CANAL_PLUS: 381,
+    CRUNCHYROLL: 283,
     PARAMOUNT_PLUS: 531,
-    ADN: 415,
+    ADN: 1870,
     OCS: 56,
-    APPLE_TV: 350,
-    CRUNCHYROLL: 283
+    APPLE_TV: 350
   } as const
 
   // Constantes pour les IDs des genres
@@ -557,6 +557,59 @@ export class TMDBClient {
     return {
       results: [...movieResults.results, ...tvResults.results],
       page: page,
+      total_pages: Math.max(movieResults.total_pages, tvResults.total_pages),
+      total_results: movieResults.total_results + tvResults.total_results
+    }
+  }
+
+  /**
+   * Recherche des films et séries avec filtres
+   * @param query - Terme de recherche
+   * @param providerId - ID du fournisseur de streaming
+   * @param genreId - ID du genre
+   */
+  async searchWithFilters(query: string, providerId: number | null, genreId: number | null): Promise<TMDBResponse<Movie | TVShow>> {
+    const params: Record<string, string> = {}
+
+    // Ajout des paramètres de recherche
+    if (query) {
+      params.query = query
+    }
+
+    // Ajout des filtres
+    if (providerId) {
+      params.with_watch_providers = providerId.toString()
+      params.watch_region = 'FR'
+    }
+
+    if (genreId) {
+      params.with_genres = genreId.toString()
+    }
+
+    // Si on a une recherche textuelle, utiliser search, sinon discover
+    let movieResults: TMDBResponse<Movie>
+    let tvResults: TMDBResponse<TVShow>
+
+    if (query) {
+      // Mode recherche
+      movieResults = await this.fetchFromTMDB<TMDBResponse<Movie>>('/search/movie', params)
+      tvResults = await this.fetchFromTMDB<TMDBResponse<TVShow>>('/search/tv', params)
+    } else {
+      // Mode découverte (uniquement avec les filtres)
+      movieResults = await this.fetchFromTMDB<TMDBResponse<Movie>>('/discover/movie', params)
+      tvResults = await this.fetchFromTMDB<TMDBResponse<TVShow>>('/discover/tv', params)
+    }
+
+    // Fusionner et trier les résultats
+    const allResults = [...movieResults.results, ...tvResults.results].sort((a, b) => {
+      const dateA = new Date(('release_date' in a ? a.release_date : a.first_air_date) || '').getTime()
+      const dateB = new Date(('release_date' in b ? b.release_date : b.first_air_date) || '').getTime()
+      return dateB - dateA
+    })
+
+    return {
+      results: allResults,
+      page: 1,
       total_pages: Math.max(movieResults.total_pages, tvResults.total_pages),
       total_results: movieResults.total_results + tvResults.total_results
     }

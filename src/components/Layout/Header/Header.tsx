@@ -123,7 +123,9 @@ export const Header = () => {
 
         {/* Mobile Menu */}
         <motion.nav
-          className="md:hidden overflow-hidden"
+          className={`fixed left-0 right-0 top-[72px] md:hidden overflow-hidden bg-black/90 backdrop-blur-lg shadow-lg ${
+            isMenuOpen ? 'top-0' : ''
+          }`}
           initial={false}
           animate={{
             height: isMenuOpen ? 'auto' : 0,
@@ -131,7 +133,7 @@ export const Header = () => {
           }}
           transition={{ duration: 0.3 }}
         >
-          <div className="mt-4 space-y-4 pb-4">
+          <div className="mt-4 space-y-4 pb-4 px-4">
             <div className="mb-6">
               <SearchBar />
             </div>

@@ -78,7 +78,7 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       {/* Hero Section avec backdrop */}
-      <div className="relative h-[80vh] min-h-[500px]">
+      <div className="relative h-screen md:h-[80vh] min-h-[500px]">
         {tvShow.backdrop_path && (
           <>
             <Image
@@ -93,14 +93,14 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
         )}
 
         <div className="absolute inset-0 flex items-end">
-          <div className="container mx-auto px-4 pb-12">
+          <div className="container mx-auto px-4 pb-12 md:pb-16">
             <motion.div
               className="grid gap-8 md:grid-cols-[300px,1fr]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               {/* Poster */}
-              <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-2xl">
+              <div className="relative aspect-[2/3] w-48 md:w-full mx-auto md:mx-0 rounded-lg overflow-hidden shadow-2xl">
                 <Image
                   src={tvShow.poster_path ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}` : '/placeholder-tv.png'}
                   alt={tvShow.name}
@@ -111,10 +111,10 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
               </div>
 
               {/* Informations */}
-              <div className="space-y-6 flex flex-col justify-end">
+              <div className="space-y-6 flex flex-col justify-end text-center md:text-left">
                 <div>
-                  <h1 className="text-4xl font-bold text-white mb-2">{tvShow.name}</h1>
-                  <div className="flex flex-wrap items-center gap-4">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{tvShow.name}</h1>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
                     <div className="flex items-center gap-2">
                       <RatingCircle rating={tvShow.vote_average} size="lg" />
                       <span className="text-white font-medium">Note des utilisateurs</span>
@@ -124,7 +124,7 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
                         {new Date(tvShow.first_air_date).toLocaleDateString('fr-FR')}
                       </span>
                     )}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap justify-center md:justify-start gap-2">
                       {tvShow.genres?.map((genre) => (
                         <span
                           key={genre.id}

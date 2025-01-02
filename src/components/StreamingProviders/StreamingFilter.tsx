@@ -3,6 +3,7 @@
 import { TMDBClient } from '@/services/tmdb/client'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { Accordion } from '@/components/Accordion/Accordion'
 
 // Props du composant StreamingFilter
 interface StreamingFilterProps {
@@ -25,45 +26,53 @@ const PROVIDERS = [
 ]
 
 export function StreamingFilter({ selectedProviders, onProviderToggle, className = '' }: StreamingFilterProps) {
-  return (
-    <div className={`${className} p-4 bg-gray-900/50 rounded-lg`}>
-      {/* Titre de la section */}
-      <h3 className="text-lg font-semibold text-white mb-4">Plateformes de streaming</h3>
-
-      {/* Grille de boutons des plateformes */}
-      <div className="flex flex-wrap gap-3">
-        {PROVIDERS.map((provider) => {
-          const isSelected = selectedProviders.includes(provider.id)
-          return (
-            // Bouton animé pour chaque plateforme
-            <motion.button
-              key={provider.id}
-              onClick={() => onProviderToggle(provider.id)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                isSelected
-                  ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/25' // Style sélectionné
-                  : 'bg-gray-800 hover:bg-gray-700' // Style non sélectionné
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {/* Logo de la plateforme */}
-              <div className="relative w-6 h-6">
-                <Image
-                  src={provider.logo}
-                  alt={provider.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              {/* Nom de la plateforme */}
-              <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-300'}`}>
-                {provider.name}
-              </span>
-            </motion.button>
-          )
-        })}
-      </div>
+  const ProviderButtons = () => (
+    <div className="flex flex-wrap gap-3">
+      {PROVIDERS.map((provider) => {
+        const isSelected = selectedProviders.includes(provider.id)
+        return (
+          <motion.button
+            key={provider.id}
+            onClick={() => onProviderToggle(provider.id)}
+            className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+              isSelected
+                ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/25'
+                : 'bg-gray-800 hover:bg-gray-700'
+            }`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="relative w-6 h-6">
+              <Image
+                src={provider.logo}
+                alt={provider.name}
+                fill
+                className="object-contain"
+              />
+            </div>
+            <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-300'}`}>
+              {provider.name}
+            </span>
+          </motion.button>
+        )
+      })}
     </div>
+  )
+
+  return (
+    <>
+      {/* Version mobile/tablette avec accordéon */}
+      <div className={`md:hidden ${className}`}>
+        <Accordion title="Plateformes de streaming" defaultOpen={false}>
+          <ProviderButtons />
+        </Accordion>
+      </div>
+
+      {/* Version desktop sans accordéon */}
+      <div className={`hidden md:block p-4 bg-gray-900/50 rounded-lg ${className}`}>
+        <h3 className="text-lg font-semibold text-white mb-4">Plateformes de streaming</h3>
+        <ProviderButtons />
+      </div>
+    </>
   )
 } 

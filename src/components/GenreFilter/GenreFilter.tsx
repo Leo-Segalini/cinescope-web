@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Accordion } from '@/components/Accordion/Accordion'
 
 // Interface pour la structure d'un genre
 interface Genre {
@@ -39,30 +40,40 @@ interface GenreFilterProps {
 }
 
 export const GenreFilter = ({ selectedGenre, onGenreChange, className = '' }: GenreFilterProps) => {
-  return (
-    <div className={`${className} p-4 bg-gray-900/50 rounded-lg`}>
-      {/* Titre de la section */}
-      <h3 className="text-lg font-semibold text-white mb-4">Genres</h3>
-
-      {/* Grille de boutons des genres */}
-      <div className="flex flex-wrap gap-3">
-        {genres.map((genre) => (
-          // Bouton animé pour chaque genre
-          <motion.button
-            key={genre.id}
-            onClick={() => onGenreChange(selectedGenre === genre.id ? null : genre.id)} // Toggle de la sélection
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              selectedGenre === genre.id
-                ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25' // Style sélectionné
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700' // Style non sélectionné
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {genre.name}
-          </motion.button>
-        ))}
-      </div>
+  const GenreButtons = () => (
+    <div className="flex flex-wrap gap-3">
+      {genres.map((genre) => (
+        <motion.button
+          key={genre.id}
+          onClick={() => onGenreChange(selectedGenre === genre.id ? null : genre.id)}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            selectedGenre === genre.id
+              ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {genre.name}
+        </motion.button>
+      ))}
     </div>
+  )
+
+  return (
+    <>
+      {/* Version mobile/tablette avec accordéon */}
+      <div className={`md:hidden ${className}`}>
+        <Accordion title="Genres" defaultOpen={false}>
+          <GenreButtons />
+        </Accordion>
+      </div>
+
+      {/* Version desktop sans accordéon */}
+      <div className={`hidden md:block p-4 bg-gray-900/50 rounded-lg ${className}`}>
+        <h3 className="text-lg font-semibold text-white mb-4">Genres</h3>
+        <GenreButtons />
+      </div>
+    </>
   )
 } 
