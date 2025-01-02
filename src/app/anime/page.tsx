@@ -6,7 +6,7 @@ export default async function AnimePage() {
   const { popularAnime, trendingAnime, topRatedAnime, newAnime } = await getAnimePageData();
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       {popularAnime[0] && (
         <Hero
           title={popularAnime[0].name}

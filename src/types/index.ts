@@ -6,7 +6,7 @@ export interface Movie {
   overview: string
   release_date: string
   vote_average: number
-  genre_ids: number[]
+  genre_ids?: number[]
 }
 
 export interface TVShow {
@@ -17,7 +17,7 @@ export interface TVShow {
   overview: string
   first_air_date: string
   vote_average: number
-  genre_ids: number[]
+  genre_ids?: number[]
 }
 
 export interface WatchProvider {

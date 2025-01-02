@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import type { Movie } from '@/types/tmdb'
 import { TMDBImage } from '@/components/common/TMDBImage'
+import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
 
 interface MovieCardProps {
   movie: Movie
@@ -29,13 +30,13 @@ export const MovieCard = ({ movie, priority = false }: MovieCardProps) => {
               className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <RatingCircle rating={movie.vote_average} size="sm" />
+            </div>
           </div>
           <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
             <h2 className="text-lg font-bold text-white">{movie.title}</h2>
             <div className="mt-2 flex items-center gap-2">
-              <span className="rounded bg-yellow-500 px-2 py-1 text-sm font-semibold text-black">
-                ★ {movie.vote_average.toFixed(1)}
-              </span>
               <span className="text-sm text-gray-300">
                 {new Date(movie.release_date).getFullYear()}
               </span>

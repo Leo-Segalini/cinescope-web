@@ -5,46 +5,43 @@ import { MovieGrid } from '@/components/MovieGrid/MovieGrid'
 import { fetchMovies } from '@/services/api'
 import { useEffect, useState } from 'react'
 import { Movie } from '@/types'
+import { LoadingScreen } from '@/components/LoadingScreen/LoadingScreen'
+
+interface MoviesData {
+  popularMovies: Movie[]
+  topRatedMovies: Movie[]
+  nowPlayingMovies: Movie[]
+  upcomingMovies: Movie[]
+}
 
 export default function MoviesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<{
-    trendingMovies: Movie[]
-    popularMovies: Movie[]
-    topRatedMovies: Movie[]
-    upcomingMovies: Movie[]
-  } | null>(null)
+  const [data, setData] = useState<MoviesData | null>(null)
 
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log('Fetching movies data...')
-        const [trendingMovies, popularMovies, topRatedMovies, upcomingMovies] = await Promise.all([
-          fetchMovies('now_playing'),
+        const [popularMovies, topRatedMovies, nowPlayingMovies, upcomingMovies] = await Promise.all([
           fetchMovies('popular'),
           fetchMovies('top_rated'),
-          fetchMovies('upcoming'),
+          fetchMovies('now_playing'),
+          fetchMovies('upcoming')
         ])
 
-        console.log('Movies data fetched:', {
-          trendingMovies: trendingMovies?.length,
-          popularMovies: popularMovies?.length,
-          topRatedMovies: topRatedMovies?.length,
-          upcomingMovies: upcomingMovies?.length,
-        })
-
         setData({
-          trendingMovies,
           popularMovies,
           topRatedMovies,
-          upcomingMovies,
+          nowPlayingMovies,
+          upcomingMovies
         })
       } catch (err) {
-        console.error('Error fetching movies data:', err)
-        setError('Une erreur est survenue lors du chargement des films')
+        setError('Une erreur est survenue lors du chargement des données')
+        console.error('Error fetching data:', err)
       } finally {
-        setIsLoading(false)
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 1500)
       }
     }
 
@@ -52,25 +49,21 @@ export default function MoviesPage() {
   }, [])
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">Chargement...</div>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">{error}</div>
+        <div className="text-red-500 text-lg">{error}</div>
       </div>
     )
   }
 
-  if (!data || !data.trendingMovies.length) {
+  if (!data) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">Aucun film disponible</div>
+        <div className="text-white text-lg">Aucun contenu disponible</div>
       </div>
     )
   }
@@ -87,11 +80,11 @@ export default function MoviesPage() {
         id={heroMovie.id}
       />
 
-      <div className="container mx-auto px-4 pb-16">
-        <MovieGrid title="Films Tendance" items={data.trendingMovies} />
+      <div className="container mx-auto px-4 -mt-32 relative z-10 pb-16">
         <MovieGrid title="Films Populaires" items={data.popularMovies} />
         <MovieGrid title="Films les Mieux Notés" items={data.topRatedMovies} />
-        <MovieGrid title="Films à Venir" items={data.upcomingMovies} />
+        <MovieGrid title="Films à l'Affiche" items={data.nowPlayingMovies} />
+        <MovieGrid title="Prochaines Sorties" items={data.upcomingMovies} />
       </div>
     </main>
   )

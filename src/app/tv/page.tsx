@@ -5,46 +5,40 @@ import { TVShowGrid } from '@/components/TVShowGrid/TVShowGrid'
 import { fetchTVShows } from '@/services/api'
 import { useEffect, useState } from 'react'
 import { TVShow } from '@/types'
+import { LoadingScreen } from '@/components/LoadingScreen/LoadingScreen'
+
+interface TVShowsData {
+  popularTVShows: TVShow[]
+  topRatedTVShows: TVShow[]
+  onTheAirTVShows: TVShow[]
+}
 
 export default function TVShowsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<{
-    popularTVShows: TVShow[]
-    topRatedTVShows: TVShow[]
-    airingTodayTVShows: TVShow[]
-    onTheAirTVShows: TVShow[]
-  } | null>(null)
+  const [data, setData] = useState<TVShowsData | null>(null)
 
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log('Fetching TV shows data...')
-        const [popularTVShows, topRatedTVShows, airingTodayTVShows, onTheAirTVShows] = await Promise.all([
+        const [popularTVShows, topRatedTVShows, onTheAirTVShows] = await Promise.all([
           fetchTVShows('popular'),
           fetchTVShows('top_rated'),
-          fetchTVShows('airing_today'),
-          fetchTVShows('on_the_air'),
+          fetchTVShows('on_the_air')
         ])
-
-        console.log('TV shows data fetched:', {
-          popularTVShows: popularTVShows?.length,
-          topRatedTVShows: topRatedTVShows?.length,
-          airingTodayTVShows: airingTodayTVShows?.length,
-          onTheAirTVShows: onTheAirTVShows?.length,
-        })
 
         setData({
           popularTVShows,
           topRatedTVShows,
-          airingTodayTVShows,
-          onTheAirTVShows,
+          onTheAirTVShows
         })
       } catch (err) {
-        console.error('Error fetching TV shows data:', err)
-        setError('Une erreur est survenue lors du chargement des séries')
+        setError('Une erreur est survenue lors du chargement des données')
+        console.error('Error fetching data:', err)
       } finally {
-        setIsLoading(false)
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 1500)
       }
     }
 
@@ -52,25 +46,21 @@ export default function TVShowsPage() {
   }, [])
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">Chargement...</div>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">{error}</div>
+        <div className="text-red-500 text-lg">{error}</div>
       </div>
     )
   }
 
-  if (!data || !data.popularTVShows.length) {
+  if (!data) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">Aucune série disponible</div>
+        <div className="text-white text-lg">Aucun contenu disponible</div>
       </div>
     )
   }
@@ -87,11 +77,10 @@ export default function TVShowsPage() {
         id={heroShow.id}
       />
 
-      <div className="container mx-auto px-4 pb-16">
+      <div className="container mx-auto px-4 -mt-32 relative z-10 pb-16">
         <TVShowGrid title="Séries Populaires" items={data.popularTVShows} />
         <TVShowGrid title="Séries les Mieux Notées" items={data.topRatedTVShows} />
-        <TVShowGrid title="Diffusées Aujourd'hui" items={data.airingTodayTVShows} />
-        <TVShowGrid title="En Cours de Diffusion" items={data.onTheAirTVShows} />
+        <TVShowGrid title="Séries en Cours de Diffusion" items={data.onTheAirTVShows} />
       </div>
     </main>
   )
