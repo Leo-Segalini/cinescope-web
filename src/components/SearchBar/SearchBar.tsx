@@ -121,7 +121,7 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
             ).getFullYear()
             const posterPath = item.poster_path
               ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
-              : '/no-poster.png'
+              : '/images/no-poster.png'
 
             return (
               <div
@@ -139,6 +139,8 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
                     alt={title}
                     fill
                     className="object-cover rounded"
+                    unoptimized={!item.poster_path}
+                    loading="lazy"
                   />
                 </div>
                 <div className="flex-1 min-w-0">

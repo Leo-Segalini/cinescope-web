@@ -133,7 +133,7 @@ export const HeaderSearchBar = () => {
             ).getFullYear()
             const posterPath = item.poster_path
               ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
-              : '/no-poster.png'
+              : '/images/no-poster.png'
 
             return (
               <div
@@ -151,6 +151,8 @@ export const HeaderSearchBar = () => {
                     alt={title}
                     fill
                     className="object-cover rounded"
+                    unoptimized={!item.poster_path}
+                    loading="lazy"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
