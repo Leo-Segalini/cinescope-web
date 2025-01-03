@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { Play, Info } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
+import { TMDBImage } from '@/components/common/TMDBImage'
 import { WatchProvidersResponse } from '@/types/tmdb'
 
 // Props du composant Hero
@@ -52,12 +52,14 @@ export function Hero({ title, overview, backdropPath, type, id, watchProviders }
       {/* Section de l'image de fond avec overlay */}
       <div className="absolute inset-0">
         {backdropPath ? (
-          <Image
-            src={`https://image.tmdb.org/t/p/original${backdropPath}`}
-            alt=""
+          <TMDBImage
+            path={backdropPath}
+            alt={title}
             fill
-            className="object-cover"
+            type="backdrop"
+            size="original"
             priority
+            className="object-cover"
           />
         ) : (
           <div className="h-full w-full bg-gray-900" />

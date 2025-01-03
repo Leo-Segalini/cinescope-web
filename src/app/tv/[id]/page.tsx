@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react'
 import { tmdbClient } from '@/services/tmdb/client'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
+import { TMDBImage } from '@/components/common/TMDBImage'
 import Link from 'next/link'
 import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
 import { VideoSection } from '@/components/VideoSection/VideoSection'
@@ -81,12 +81,14 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
       <div className="relative min-h-screen md:h-[80vh] md:min-h-[500px] bottom-0">
         {tvShow.backdrop_path && (
           <>
-            <Image
-              src={`https://image.tmdb.org/t/p/original${tvShow.backdrop_path}`}
+            <TMDBImage
+              path={tvShow.backdrop_path}
               alt={tvShow.name}
               fill
-              className="object-cover"
+              type="backdrop"
+              size="original"
               priority
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
           </>
@@ -101,12 +103,13 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
             >
               {/* Poster */}
               <div className="relative aspect-[2/3] w-48 md:w-full mx-auto md:mx-0 rounded-lg overflow-hidden shadow-2xl">
-                <Image
-                  src={tvShow.poster_path ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}` : '/placeholder-tv.png'}
+                <TMDBImage
+                  path={tvShow.poster_path}
                   alt={tvShow.name}
                   fill
-                  className="object-cover"
+                  type="poster"
                   priority
+                  className="object-cover"
                 />
               </div>
 
@@ -244,17 +247,16 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
                     whileHover={{ scale: 1.05 }}
                   >
                     <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
-                      <Image
-                        src={actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : '/placeholder-actor.png'}
+                      <TMDBImage
+                        path={actor.profile_path}
                         alt={actor.name}
                         fill
+                        type="profile"
                         className="object-cover transition-transform group-hover:scale-110"
                       />
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="font-medium text-white truncate">{actor.name}</h3>
-                      <p className="text-sm text-gray-400 truncate">{actor.character}</p>
-                    </div>
+                    <h3 className="font-medium text-white truncate">{actor.name}</h3>
+                    <p className="text-sm text-gray-400 truncate">{actor.character}</p>
                   </motion.div>
                 </Link>
               ))}
@@ -287,10 +289,11 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
                     whileHover={{ scale: 1.05 }}
                   >
                     <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
-                      <Image
-                        src={show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : '/placeholder-tv.png'}
+                      <TMDBImage
+                        path={show.poster_path}
                         alt={show.name}
                         fill
+                        type="poster"
                         className="object-cover transition-transform group-hover:scale-110"
                       />
                       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">

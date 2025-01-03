@@ -21,55 +21,32 @@ export default function NotFound() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center px-4">
-      <div className="text-center">
-        {/* Film Reel Animation */}
-        <motion.div
-          className="mb-8"
-          animate={{
-            rotate: 360,
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "linear",
-          }}
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <motion.div
+        className="max-w-2xl mx-auto text-center space-y-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-6xl md:text-8xl font-bold text-white">404</h1>
+        <div className="space-y-4">
+          <p className="text-xl md:text-2xl text-gray-300">
+            {randomQuote.quote}
+          </p>
+          <p className="text-lg text-gray-400">
+            — {randomQuote.movie}
+          </p>
+        </div>
+        <p className="text-xl text-gray-300">
+          Cette page n&apos;existe pas ou a été déplacée.
+        </p>
+        <Link
+          href="/"
+          className="inline-block px-6 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
         >
-          <div className="w-32 h-32 mx-auto border-8 border-gray-300 rounded-full relative">
-            <div className="absolute inset-0 border-8 border-gray-300 rounded-full transform rotate-45" />
-            <div className="absolute inset-0 border-8 border-gray-300 rounded-full transform rotate-90" />
-            <div className="absolute inset-4 bg-gray-300 rounded-full" />
-          </div>
-        </motion.div>
-
-        {/* Error Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h1 className="text-6xl font-bold text-red-600 mb-4">404</h1>
-          <p className="text-2xl text-gray-300 mb-8">Cette scène n&apos;existe pas</p>
-          <div className="text-lg text-gray-400 mb-8">
-            <p className="italic">&quot;{randomQuote.quote}&quot;</p>
-            <p className="mt-2">- {randomQuote.movie}</p>
-          </div>
-        </motion.div>
-
-        {/* Action Button */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Link
-            href="/"
-            className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold transition-transform hover:scale-105"
-          >
-            Retour à l&apos;accueil
-          </Link>
-        </motion.div>
-      </div>
+          Retour à l&apos;accueil
+        </Link>
+      </motion.div>
     </div>
   )
 } 

@@ -27,6 +27,7 @@ export const TVShowCard = ({ show, priority = false }: TVShowCardProps) => {
               alt={show.name}
               fill
               priority={priority}
+              type="poster"
               className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
