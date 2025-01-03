@@ -10,12 +10,14 @@ interface StreamingProvider {
 }
 
 const streamingProviders: StreamingProvider[] = [
-  { id: 8, name: 'Netflix', logo: '/images/streaming/netflix.png' },
-  { id: 337, name: 'Disney Plus', logo: '/images/streaming/disney.png' },
-  { id: 119, name: 'Amazon Prime', logo: '/images/streaming/prime.png' },
-  { id: 531, name: 'Paramount+', logo: '/images/streaming/paramount.png' },
-  { id: 350, name: 'Apple TV+', logo: '/images/streaming/apple.png' },
-  { id: 381, name: 'Canal+', logo: '/images/streaming/canal.png' },
+  { id: 8, name: 'Netflix', logo: '/providers/netflix.png' },
+  { id: 337, name: 'Disney Plus', logo: '/providers/disney-plus.png' },
+  { id: 119, name: 'Amazon Prime', logo: '/providers/amazon-prime-video.png' },
+  { id: 531, name: 'Paramount+', logo: '/providers/paramount-plus.png' },
+  { id: 350, name: 'Apple TV+', logo: '/providers/apple-tv.png' },
+  { id: 381, name: 'Canal+', logo: '/providers/canal-plus.png' },
+  { id: 1870, name: 'ADN', logo: '/providers/adn.png' },
+  { id: 56, name: 'OCS', logo: '/providers/ocs.png' },
 ]
 
 interface StreamingFilterProps {
