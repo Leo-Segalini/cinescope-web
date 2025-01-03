@@ -1,23 +1,20 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { Movie, TVShow } from '@/types'
 import Image from 'next/image'
+import { tmdbClient } from '@/services/tmdb/client'
 
-interface SearchBarProps {
-  onSearch: (query: string) => void
-  onSubmit: (query: string) => void
-  suggestions: (Movie | TVShow)[]
-  setSuggestions: (suggestions: (Movie | TVShow)[]) => void
-}
-
-export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: SearchBarProps) => {
+export const HeaderSearchBar = () => {
   const [query, setQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [suggestions, setSuggestions] = useState<(Movie | TVShow)[]>([])
   const searchRef = useRef<HTMLDivElement>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,6 +32,21 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
     }
   }, [])
 
+  const handleSearch = useCallback(async (searchQuery: string) => {
+    if (searchQuery.length < 2) {
+      setSuggestions([])
+      return
+    }
+
+    try {
+      const response = await tmdbClient.searchWithFilters(searchQuery)
+      setSuggestions(response.results.slice(0, 5))
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+      setSuggestions([])
+    }
+  }, [])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setQuery(value)
@@ -49,7 +61,7 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
     // Délai pour éviter trop d'appels API
     if (value.trim()) {
       searchTimeoutRef.current = setTimeout(() => {
-        onSearch(value)
+        handleSearch(value)
       }, 300)
     } else {
       setSuggestions([])
@@ -59,7 +71,7 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
-      onSubmit(query)
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
       setShowSuggestions(false)
       setQuery('')
     }
@@ -80,7 +92,7 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
       e.preventDefault()
       const selected = suggestions[selectedIndex]
       const type = 'title' in selected ? 'movie' : 'tv'
-      onSubmit(`${type}/${selected.id}`)
+      router.push(`/${type}/${selected.id}`)
       setShowSuggestions(false)
       setQuery('')
     } else if (e.key === 'Escape') {
@@ -90,7 +102,7 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
 
   const handleSuggestionClick = (item: Movie | TVShow) => {
     const type = 'title' in item ? 'movie' : 'tv'
-    onSubmit(`${type}/${item.id}`)
+    router.push(`/${type}/${item.id}`)
     setShowSuggestions(false)
     setQuery('')
   }

@@ -567,16 +567,22 @@ export class TMDBClient {
    * @param query - Terme de recherche
    * @param providerId - ID du fournisseur de streaming
    * @param genreId - ID du genre
+   * @param mediaType - Type de média (movie/tv)
    */
-  async searchWithFilters(query: string, providerId: number | null, genreId: number | null): Promise<TMDBResponse<Movie | TVShow>> {
-    const params: Record<string, string> = {}
+  async searchWithFilters(
+    query: string,
+    providerId: number | null = null,
+    genreId: number | null = null,
+    mediaType: string | null = null
+  ): Promise<TMDBResponse<Movie | TVShow>> {
+    if (!query) return { results: [], page: 1, total_pages: 0, total_results: 0 }
 
-    // Ajout des paramètres de recherche
-    if (query) {
-      params.query = query
+    const params: Record<string, string> = {
+      query,
+      include_adult: 'false',
+      language: 'fr-FR',
     }
 
-    // Ajout des filtres
     if (providerId) {
       params.with_watch_providers = providerId.toString()
       params.watch_region = 'FR'
@@ -586,33 +592,52 @@ export class TMDBClient {
       params.with_genres = genreId.toString()
     }
 
-    // Si on a une recherche textuelle, utiliser search, sinon discover
-    let movieResults: TMDBResponse<Movie>
-    let tvResults: TMDBResponse<TVShow>
-
-    if (query) {
-      // Mode recherche
-      movieResults = await this.fetchFromTMDB<TMDBResponse<Movie>>('/search/movie', params)
-      tvResults = await this.fetchFromTMDB<TMDBResponse<TVShow>>('/search/tv', params)
-    } else {
-      // Mode découverte (uniquement avec les filtres)
-      movieResults = await this.fetchFromTMDB<TMDBResponse<Movie>>('/discover/movie', params)
-      tvResults = await this.fetchFromTMDB<TMDBResponse<TVShow>>('/discover/tv', params)
+    let endpoint = '/search/multi'
+    if (mediaType === 'movie') {
+      endpoint = '/search/movie'
+    } else if (mediaType === 'tv') {
+      endpoint = '/search/tv'
     }
 
-    // Fusionner et trier les résultats
-    const allResults = [...movieResults.results, ...tvResults.results].sort((a, b) => {
-      const dateA = new Date(('release_date' in a ? a.release_date : a.first_air_date) || '').getTime()
-      const dateB = new Date(('release_date' in b ? b.release_date : b.first_air_date) || '').getTime()
-      return dateB - dateA
-    })
+    return this.fetchFromTMDB<TMDBResponse<Movie | TVShow>>(endpoint, params)
+  }
 
-    return {
-      results: allResults,
-      page: 1,
-      total_pages: Math.max(movieResults.total_pages, tvResults.total_pages),
-      total_results: movieResults.total_results + tvResults.total_results
+  /**
+   * Récupère tous les films et séries avec filtres
+   * @param page - Numéro de la page
+   * @param mediaType - Type de média (movie/tv)
+   * @param genreId - ID du genre
+   * @param providerId - ID du fournisseur de streaming
+   */
+  async discoverContent(
+    page = 1,
+    mediaType: string | null = null,
+    genreId: number | null = null,
+    providerId: number | null = null
+  ): Promise<TMDBResponse<Movie | TVShow>> {
+    const params: Record<string, string> = {
+      page: page.toString(),
+      language: 'fr-FR',
+      sort_by: 'popularity.desc',
+      include_adult: 'false',
     }
+
+    if (genreId) {
+      params.with_genres = genreId.toString()
+    }
+
+    if (providerId) {
+      params.with_watch_providers = providerId.toString()
+      params.watch_region = 'FR'
+    }
+
+    let endpoint = '/discover/movie'
+    if (mediaType === 'tv') {
+      endpoint = '/discover/tv'
+    }
+
+    const response = await this.fetchFromTMDB<TMDBResponse<Movie | TVShow>>(endpoint, params)
+    return response
   }
 }
 

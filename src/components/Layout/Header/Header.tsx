@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { SearchBar } from '@/components/SearchBar/SearchBar'
+import { HeaderSearchBar } from '@/components/SearchBar/HeaderSearchBar'
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -82,7 +82,7 @@ export const Header = () => {
               ))}
             </ul>
             <div className="w-72">
-              <SearchBar />
+              <HeaderSearchBar />
             </div>
           </nav>
 
@@ -135,7 +135,7 @@ export const Header = () => {
         >
           <div className="mt-4 space-y-4 pb-4 px-4">
             <div className="mb-6">
-              <SearchBar />
+              <HeaderSearchBar />
             </div>
             <ul className="space-y-4">
               {menuItems.map(item => (
