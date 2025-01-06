@@ -60,6 +60,8 @@ export function Hero({ title, overview, backdropPath, type, id, watchProviders }
             size="original"
             priority
             className="object-cover"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSEkMjU1LC0yMi4xODY6Nzg2OjEwRUhGSU1OTjY+PkVHSkhGTj42Pj7/2wBDAR"
           />
         ) : (
           <div className="h-full w-full bg-gray-900" />
@@ -78,11 +80,11 @@ export function Hero({ title, overview, backdropPath, type, id, watchProviders }
             className="max-w-3xl space-y-4"
           >
             {/* Titre et description */}
-            <h1 className="text-4xl font-bold text-white md:text-6xl">{title}</h1>
-            <p className="text-lg text-gray-300">{overview}</p>
+            <h1 className="text-4xl font-bold text-white md:text-6xl min-h-[3rem]">{title}</h1>
+            <p className="text-lg text-gray-300 min-h-[4rem]">{overview}</p>
 
             {/* Boutons d'action */}
-            <div className="flex gap-4 flex-wrap">
+            <div className="flex gap-4 flex-wrap min-h-[3.5rem]">
               {/* Bouton de streaming si disponible */}
               {mainProvider && (
                 <motion.div

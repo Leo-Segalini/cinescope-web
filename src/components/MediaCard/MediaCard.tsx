@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
 
 // Props du composant MediaCard
 interface MediaCardProps {
@@ -23,9 +22,6 @@ export const MediaCard = ({
   voteAverage,
   type,
 }: MediaCardProps) => {
-  // Extraction de l'année de sortie
-  const year = releaseDate ? new Date(releaseDate).getFullYear() : null
-
   return (
     // Conteneur avec animations et effets de survol
     <motion.div
@@ -48,48 +44,33 @@ export const MediaCard = ({
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-110"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            priority={false}
+            loading="lazy"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSEkMjU1LC0yMi4xODY6Nzg2OjEwRUhGSU1OTjY+PkVHSkhGTj42Pj7/2wBDAR"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-            <span className="text-gray-400">No image available</span>
+          <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+            <span className="text-gray-500 text-sm">No image</span>
           </div>
         )}
 
-        {/* Overlay avec dégradé pour améliorer la lisibilité */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-        {/* Affichage de la note si disponible */}
-        {voteAverage && (
-          <div className="absolute top-2 right-2 z-10">
-            <div className="bg-black/50 pt-1 pr-1 rounded-full backdrop-blur-sm flex items-center justify-center">
-              <div className="flex items-center justify-center">
-                <RatingCircle rating={voteAverage} size="sm"/>
+        {/* Overlay avec informations */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="text-white font-semibold truncate mb-1 min-h-[1.5rem]">{title}</h3>
+            {releaseDate && (
+              <p className="text-gray-300 text-sm min-h-[1.25rem]">
+                {new Date(releaseDate).getFullYear()}
+              </p>
+            )}
+            {typeof voteAverage === 'number' && voteAverage > 0 && (
+              <div className="flex items-center gap-1 text-yellow-500 min-h-[1.25rem]">
+                <span>★</span>
+                <span>{voteAverage.toFixed(1)}</span>
               </div>
-            </div>
+            )}
           </div>
-        )}
-
-        {/* Zone de contenu avec titre et année */}
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-8 transition-transform duration-300 group-hover:translate-y-0">
-          {/* Titre avec animation */}
-          <motion.h3
-            className="text-lg font-semibold text-white line-clamp-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            {title}
-          </motion.h3>
-
-          {/* Année avec animation */}
-          <motion.div
-            className="mt-2 flex items-center gap-2 text-sm text-gray-300"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            {year && <span>{year}</span>}
-          </motion.div>
         </div>
       </Link>
     </motion.div>

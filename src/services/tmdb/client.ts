@@ -3,6 +3,16 @@
 
 import { Movie, TVShow } from '@/types/tmdb'
 
+// Type pour les données en cache
+interface CacheEntry<T> {
+  data: T
+  timestamp: number
+}
+
+// Cache pour les requêtes
+const cache = new Map<string, CacheEntry<unknown>>()
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes en millisecondes
+
 interface PersonDetails {
   id: number
   name: string
@@ -86,23 +96,40 @@ class TMDBClient {
   private apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY
   private accessToken = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN
 
-  private async fetchWithAuth(endpoint: string) {
+  private async fetchWithCache(endpoint: string) {
+    const cacheKey = endpoint
+    const now = Date.now()
+    const cachedData = cache.get(cacheKey)
+
+    // Retourner les données du cache si elles sont encore valides
+    if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
+      return cachedData.data
+    }
+
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/json',
         },
+        next: {
+          revalidate: 300 // Revalidation toutes les 5 minutes
+        }
       })
     
-    if (!response.ok) {
+      if (!response.ok) {
         if (response.status === 404) {
           throw new Error(`Contenu non trouvé (${response.status})`)
         }
         throw new Error(`TMDB API error: ${response.status} ${response.statusText}`)
       }
 
-      return response.json()
+      const data = await response.json()
+      
+      // Mettre en cache les nouvelles données
+      cache.set(cacheKey, { data, timestamp: now })
+      
+      return data
     } catch (error) {
       console.error(`Error fetching from TMDB API (${endpoint}):`, error)
       throw error
@@ -110,87 +137,87 @@ class TMDBClient {
   }
 
   async getMovieDetails(id: number): Promise<Movie> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/movie/${id}?append_to_response=videos,credits,similar,watch/providers&language=fr-FR`
     )
   }
 
   async getTVShowDetails(id: number): Promise<TVShow> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/tv/${id}?append_to_response=videos,credits,similar,watch/providers&language=fr-FR`
     )
   }
 
   async getPersonDetails(id: number): Promise<PersonDetails> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/person/${id}?append_to_response=combined_credits&language=fr-FR`
     )
   }
 
   async getTVShowSeasonDetails(tvShowId: number, seasonNumber: number): Promise<SeasonDetails> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/tv/${tvShowId}/season/${seasonNumber}?language=fr-FR`
     )
   }
 
   async getMovieWatchProviders(id: number): Promise<WatchProviders> {
-    return this.fetchWithAuth(`/movie/${id}/watch/providers`)
+    return this.fetchWithCache(`/movie/${id}/watch/providers`)
   }
 
   async getTVShowWatchProviders(id: number): Promise<WatchProviders> {
-    return this.fetchWithAuth(`/tv/${id}/watch/providers`)
+    return this.fetchWithCache(`/tv/${id}/watch/providers`)
   }
 
   async getMoviesByWatchProvider(providerId: number): Promise<{ results: Movie[] }> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/discover/movie?with_watch_providers=${providerId}&watch_region=FR&language=fr-FR`
     )
   }
 
   async getTVShowsByWatchProvider(providerId: number): Promise<{ results: TVShow[] }> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/discover/tv?with_watch_providers=${providerId}&watch_region=FR&language=fr-FR`
     )
   }
 
   async getPopularMovies(): Promise<{ results: Movie[] }> {
-    return this.fetchWithAuth('/movie/popular?language=fr-FR')
+    return this.fetchWithCache('/movie/popular?language=fr-FR')
   }
 
   async getPopularTVShows(): Promise<{ results: TVShow[] }> {
-    return this.fetchWithAuth('/tv/popular?language=fr-FR')
+    return this.fetchWithCache('/tv/popular?language=fr-FR')
   }
 
   async getTopRatedMovies(): Promise<{ results: Movie[] }> {
-    return this.fetchWithAuth('/movie/top_rated?language=fr-FR')
+    return this.fetchWithCache('/movie/top_rated?language=fr-FR')
   }
 
   async getTopRatedTVShows(): Promise<{ results: TVShow[] }> {
-    return this.fetchWithAuth('/tv/top_rated?language=fr-FR')
+    return this.fetchWithCache('/tv/top_rated?language=fr-FR')
   }
 
   async getUpcomingMovies(): Promise<{ results: Movie[] }> {
-    return this.fetchWithAuth('/movie/upcoming?language=fr-FR')
+    return this.fetchWithCache('/movie/upcoming?language=fr-FR')
   }
 
   async getAiringTodayTVShows(): Promise<{ results: TVShow[] }> {
-    return this.fetchWithAuth('/tv/airing_today?language=fr-FR')
+    return this.fetchWithCache('/tv/airing_today?language=fr-FR')
   }
 
   async searchMulti(query: string): Promise<{
     results: (Movie | TVShow)[]
   }> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/search/multi?query=${encodeURIComponent(query)}&language=fr-FR`
     )
   }
 
   async getSimilarMovies(id: number): Promise<{ results: Movie[] }> {
-    return this.fetchWithAuth(`/movie/${id}/similar?language=fr-FR`)
+    return this.fetchWithCache(`/movie/${id}/similar?language=fr-FR`)
   }
 
   async getSimilarTVShows(id: number): Promise<{ results: TVShow[] }> {
-    return this.fetchWithAuth(`/tv/${id}/similar?language=fr-FR`)
+    return this.fetchWithCache(`/tv/${id}/similar?language=fr-FR`)
   }
 
   async discoverContent(
@@ -213,7 +240,7 @@ class TMDBClient {
       params.append('watch_region', 'FR')
     }
 
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/${type === 'movie' ? 'discover/movie' : 'discover/tv'}?${params.toString()}`
     )
   }
@@ -245,17 +272,17 @@ class TMDBClient {
       endpoint = '/search/tv'
     }
 
-    return this.fetchWithAuth(`${endpoint}?${params.toString()}`)
+    return this.fetchWithCache(`${endpoint}?${params.toString()}`)
   }
 
   async getPersonMovieCredits(id: number): Promise<PersonCredits> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/person/${id}/movie_credits?language=fr-FR`
     )
   }
 
   async getPersonTVCredits(id: number): Promise<PersonCredits> {
-    return this.fetchWithAuth(
+    return this.fetchWithCache(
       `/person/${id}/tv_credits?language=fr-FR`
     )
   }
@@ -268,7 +295,7 @@ class TMDBClient {
       sort_by: 'popularity.desc'
     })
 
-    return this.fetchWithAuth(`/discover/tv?${params.toString()}`)
+    return this.fetchWithCache(`/discover/tv?${params.toString()}`)
   }
 
   async getTrendingAnime(): Promise<{ results: TVShow[] }> {
@@ -279,7 +306,7 @@ class TMDBClient {
       sort_by: 'trending.desc'
     })
 
-    return this.fetchWithAuth(`/discover/tv?${params.toString()}`)
+    return this.fetchWithCache(`/discover/tv?${params.toString()}`)
   }
 
   async getTopRatedAnime(): Promise<{ results: TVShow[] }> {
@@ -291,7 +318,7 @@ class TMDBClient {
       'vote_count.gte': '100'
     })
 
-    return this.fetchWithAuth(`/discover/tv?${params.toString()}`)
+    return this.fetchWithCache(`/discover/tv?${params.toString()}`)
   }
 
   async getNewAnime(): Promise<{ results: TVShow[] }> {
@@ -302,11 +329,11 @@ class TMDBClient {
       sort_by: 'first_air_date.desc'
     })
 
-    return this.fetchWithAuth(`/discover/tv?${params.toString()}`)
+    return this.fetchWithCache(`/discover/tv?${params.toString()}`)
   }
 
   async getReviews(mediaType: 'movie' | 'tv', mediaId: number): Promise<{ results: Review[] }> {
-    return this.fetchWithAuth(`/${mediaType}/${mediaId}/reviews?language=fr-FR`)
+    return this.fetchWithCache(`/${mediaType}/${mediaId}/reviews?language=fr-FR`)
   }
 }
 
