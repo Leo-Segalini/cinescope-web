@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from "@/components/Layout/Header/Header";
 import { Footer } from "@/components/Layout/Footer/Footer";
+import { AuthProvider } from '@/components/Auth/AuthProvider';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -70,12 +71,14 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={inter.className}>
-        <div className="flex min-h-screen flex-col bg-black text-white">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <SpeedInsights />
-        </div>
+        <AuthProvider>
+          <div className="flex min-h-screen flex-col bg-black text-white">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <SpeedInsights />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

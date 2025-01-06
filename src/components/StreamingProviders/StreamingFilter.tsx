@@ -1,6 +1,5 @@
 'use client'
 
-import { TMDBClient } from '@/services/tmdb/client'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Accordion } from '@/components/Accordion/Accordion'
@@ -14,15 +13,15 @@ interface StreamingFilterProps {
 
 // Liste des plateformes de streaming disponibles
 const PROVIDERS = [
-  { id: TMDBClient.PROVIDERS.NETFLIX, name: 'Netflix', logo: '/providers/netflix.png' },
-  { id: TMDBClient.PROVIDERS.DISNEY_PLUS, name: 'Disney+', logo: '/providers/disney-plus.png' },
-  { id: TMDBClient.PROVIDERS.AMAZON_PRIME, name: 'Prime Video', logo: '/providers/amazon-prime-video.png' },
-  { id: TMDBClient.PROVIDERS.CANAL_PLUS, name: 'Canal+', logo: '/providers/canal-plus.png' },
-  { id: TMDBClient.PROVIDERS.CRUNCHYROLL, name: 'Crunchyroll', logo: '/providers/crunchyroll.png' },
-  { id: TMDBClient.PROVIDERS.PARAMOUNT_PLUS, name: 'Paramount+', logo: '/providers/paramount-plus.png' },
-  { id: TMDBClient.PROVIDERS.ADN, name: 'ADN', logo: '/providers/adn.png' },
-  { id: TMDBClient.PROVIDERS.OCS, name: 'OCS', logo: '/providers/ocs.png' },
-  { id: TMDBClient.PROVIDERS.APPLE_TV, name: 'Apple TV+', logo: '/providers/apple-tv.png' }
+  { id: 8, name: 'Netflix', logo: '/providers/netflix.png' },
+  { id: 337, name: 'Disney+', logo: '/providers/disney-plus.png' },
+  { id: 119, name: 'Prime Video', logo: '/providers/amazon-prime-video.png' },
+  { id: 381, name: 'Canal+', logo: '/providers/canal-plus.png' },
+  { id: 283, name: 'Crunchyroll', logo: '/providers/crunchyroll.png' },
+  { id: 531, name: 'Paramount+', logo: '/providers/paramount-plus.png' },
+  { id: 1870, name: 'ADN', logo: '/providers/adn.png' },
+  { id: 56, name: 'OCS', logo: '/providers/ocs.png' },
+  { id: 350, name: 'Apple TV+', logo: '/providers/apple-tv.png' }
 ]
 
 export function StreamingFilter({ selectedProviders, onProviderToggle, className = '' }: StreamingFilterProps) {

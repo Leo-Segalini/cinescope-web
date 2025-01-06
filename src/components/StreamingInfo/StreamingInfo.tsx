@@ -13,13 +13,13 @@ interface StreamingInfoProps {
 
 // URLs des plateformes de streaming
 const PROVIDER_URLS = {
-  NETFLIX: 'https://www.netflix.com/browse',
-  AMAZON: 'https://www.primevideo.com',
-  DISNEY: 'https://www.disneyplus.com/fr-fr',
-  CANAL: 'https://www.canalplus.com',
+  NETFLIX: 'https://www.netflix.com/fr/',
+  AMAZON: 'https://www.primevideo.com/fr/',
+  DISNEY: 'https://www.disneyplus.com/fr/',
+  CANAL: 'https://www.canalplus.com/fr/',
   PARAMOUNT: 'https://www.paramountplus.com/fr/',
-  ADN: 'https://animedigitalnetwork.fr',
-  OCS: 'https://www.ocs.fr',
+  ADN: 'https://animedigitalnetwork.fr/',
+  OCS: 'https://www.ocs.fr/',
   APPLE: 'https://tv.apple.com/fr'
 }
 
@@ -81,14 +81,14 @@ export function StreamingInfo({ providers }: StreamingInfoProps) {
   const getProviderUrl = (providerId: number) => {
     switch (providerId) {
       case 8: return PROVIDER_URLS.NETFLIX
-      case 9: return PROVIDER_URLS.AMAZON
+      case 119: return PROVIDER_URLS.AMAZON
       case 337: return PROVIDER_URLS.DISNEY
       case 381: return PROVIDER_URLS.CANAL
       case 531: return PROVIDER_URLS.PARAMOUNT
-      case 415: return PROVIDER_URLS.ADN
+      case 1870: return PROVIDER_URLS.ADN
       case 56: return PROVIDER_URLS.OCS
       case 350: return PROVIDER_URLS.APPLE
-      default: return null
+      default: return '#'
     }
   }
 

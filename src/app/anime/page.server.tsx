@@ -7,7 +7,7 @@ export const metadata = {
 }
 
 export async function getAnimePageData() {
-  const [popularAnime, trendingAnime, topRatedAnime, newAnime] = await Promise.all([
+  const [popularAnimeData, trendingAnimeData, topRatedAnimeData, newAnimeData] = await Promise.all([
     tmdbClient.getPopularAnime(),
     tmdbClient.getTrendingAnime(),
     tmdbClient.getTopRatedAnime(),
@@ -15,9 +15,9 @@ export async function getAnimePageData() {
   ])
 
   return {
-    popularAnime,
-    trendingAnime,
-    topRatedAnime,
-    newAnime,
+    popularAnime: popularAnimeData.results,
+    trendingAnime: trendingAnimeData.results,
+    topRatedAnime: topRatedAnimeData.results,
+    newAnime: newAnimeData.results,
   }
 } 

@@ -10,7 +10,7 @@ interface Season {
   name: string
   overview: string
   poster_path: string | null
-  air_date: string
+  air_date: string | null
   episode_count: number
   season_number: number
   vote_average: number

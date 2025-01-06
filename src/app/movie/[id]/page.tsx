@@ -6,11 +6,14 @@ import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
-import { VideoSection } from '@/components/VideoSection/VideoSection'
 import { StreamingInfo } from '@/components/StreamingInfo/StreamingInfo'
 import { Movie } from '@/types/tmdb'
-import Link from 'next/link'
 import clsx from 'clsx'
+import { MediaActions } from '@/components/MediaActions/MediaActions'
+import { Reviews } from '@/components/Reviews/Reviews'
+import { Cast } from '@/components/Cast/Cast'
+import { SimilarMedia } from '@/components/SimilarMedia/SimilarMedia'
+import { VideoGallery } from '@/components/VideoGallery/VideoGallery'
 
 type Section = 'description' | 'videos' | 'cast' | 'similar'
 
@@ -65,12 +68,12 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
 
   const providers = movie['watch/providers']
 
-  const navigationItems: { id: Section; label: string; show: boolean }[] = [
-    { id: 'description', label: 'Description', show: true },
-    { id: 'videos', label: 'Bande-annonce', show: movie.videos?.results.some(v => v.type === 'Trailer') ?? false },
-    { id: 'cast', label: 'Acteurs', show: (movie.credits?.cast?.length ?? 0) > 0 },
-    { id: 'similar', label: 'Vous pourriez aimer', show: similarMovies.length > 0 }
-  ]
+  const sections = [
+    { id: 'description' as const, label: 'Description', show: true },
+    { id: 'videos' as const, label: 'Vidéos', show: movie.videos?.results && movie.videos.results.length > 0 },
+    { id: 'cast' as const, label: 'Distribution', show: movie.credits?.cast && movie.credits.cast.length > 0 },
+    { id: 'similar' as const, label: 'Films similaires', show: movie.similar?.results && movie.similar.results.length > 0 }
+  ] as const
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
@@ -134,14 +137,18 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
                   </div>
                 </div>
 
-                {providers && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-4">Où regarder ?</h3>
-                    <StreamingInfo
-                      providers={providers}
-                    />
-                  </div>
-                )}
+                <div className="flex flex-col gap-4">
+                  <MediaActions mediaId={movie.id} mediaType="movie" />
+
+                  {providers && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4">Où regarder ?</h3>
+                      <StreamingInfo
+                        providers={providers}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -152,10 +159,10 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
       <div className="sticky top-0 bg-black/80 backdrop-blur-sm z-10 border-b border-white/10">
         <div className="container mx-auto px-4">
           <nav className="flex flex-wrap gap-4 md:gap-8">
-            {navigationItems.filter(item => item.show).map((item) => (
+            {sections.filter(item => item.show).map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveSection(item.id)}
+                onClick={() => setActiveSection(item.id as Section)}
                 className={clsx(
                   'py-4 text-base md:text-lg font-medium relative whitespace-nowrap',
                   activeSection === item.id ? 'text-white' : 'text-gray-400 hover:text-white transition-colors'
@@ -187,7 +194,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
             >
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">Synopsis</h2>
-                <p className="text-gray-300">{movie.overview}</p>
+                <p className="text-gray-300">{movie.overview || 'Aucun synopsis disponible'}</p>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
@@ -221,87 +228,13 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
             </motion.div>
           )}
 
-          {activeSection === 'videos' && movie.videos?.results && (
-            <motion.div
-              key="videos"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <VideoSection videos={movie.videos.results} />
-            </motion.div>
-          )}
+          {activeSection === 'videos' && <VideoGallery videos={movie?.videos?.results || []} />}
 
-          {activeSection === 'cast' && movie.credits?.cast && (
-            <motion.div
-              key="cast"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-            >
-              {movie.credits.cast.slice(0, 12).map((actor) => (
-                <Link href={`/person/${actor.id}`} key={actor.id}>
-                  <motion.div
-                    className="group"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
-                      <Image
-                        src={actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : '/placeholder-actor.png'}
-                        alt={actor.name}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="font-medium text-white truncate">{actor.name}</h3>
-                      <p className="text-sm text-gray-400 truncate">{actor.character}</p>
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
-            </motion.div>
-          )}
+          {activeSection === 'cast' && <Cast cast={movie?.credits?.cast || []} />}
 
-          {activeSection === 'similar' && similarMovies.length > 0 && (
-            <motion.div
-              key="similar"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-            >
-              {similarMovies.slice(0, 12).map((movie) => (
-                <Link href={`/movie/${movie.id}`} key={movie.id}>
-                  <motion.div
-                    className="group"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
-                      <Image
-                        src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/placeholder-movie.png'}
-                        alt={movie.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-110"
-                      />
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <RatingCircle rating={movie.vote_average} size="sm" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="font-medium text-white truncate">{movie.title}</h3>
-                      {movie.release_date && (
-                        <p className="text-sm text-gray-400">
-                          {new Date(movie.release_date).getFullYear()}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
-            </motion.div>
-          )}
+          {activeSection === 'similar' && <SimilarMedia media={similarMovies} type="movie" />}
+
+          <Reviews mediaId={movie?.id || 0} mediaType="movie" />
         </AnimatePresence>
       </div>
     </main>

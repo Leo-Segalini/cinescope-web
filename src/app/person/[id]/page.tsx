@@ -3,9 +3,26 @@
 import { useEffect, useState, use } from 'react'
 import { tmdbClient } from '@/services/tmdb/client'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
-import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { FilmographyCard } from '@/components/FilmographyCard/FilmographyCard'
+
+interface MovieCredit {
+  id: number
+  title: string
+  character: string
+  poster_path: string | null
+  release_date: string | null
+  vote_average: number
+}
+
+interface TVCredit {
+  id: number
+  name: string
+  character: string
+  poster_path: string | null
+  first_air_date: string | null
+  vote_average: number
+}
 
 interface PersonDetailsData {
   details: {
@@ -16,22 +33,26 @@ interface PersonDetailsData {
     birthday: string | null
     place_of_birth: string | null
   }
-  movieCredits: {
-    id: number
-    title: string
-    character: string
-    poster_path: string | null
-    release_date: string
-    vote_average: number
-  }[]
-  tvCredits: {
-    id: number
-    name: string
-    character: string
-    poster_path: string | null
-    first_air_date: string
-    vote_average: number
-  }[]
+  movieCredits: MovieCredit[]
+  tvCredits: TVCredit[]
+}
+
+interface MovieCreditResponse {
+  id: number
+  title?: string
+  character?: string
+  poster_path: string | null
+  release_date?: string | null
+  vote_average: number
+}
+
+interface TVCreditResponse {
+  id: number
+  name?: string
+  character?: string
+  poster_path: string | null
+  first_air_date?: string | null
+  vote_average: number
 }
 
 export default function PersonPage({ params }: { params: Promise<{ id: string }> }) {
@@ -50,13 +71,30 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         ])
 
         setData({
-          details,
-          movieCredits: movieCredits.cast
-            .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime())
-            .slice(0, 20),
-          tvCredits: tvCredits.cast
-            .sort((a, b) => new Date(b.first_air_date).getTime() - new Date(a.first_air_date).getTime())
-            .slice(0, 20)
+          details: {
+            id: details.id,
+            name: details.name,
+            biography: details.biography,
+            profile_path: details.profile_path,
+            birthday: details.birthday,
+            place_of_birth: details.place_of_birth
+          },
+          movieCredits: movieCredits.cast.map((credit: MovieCreditResponse) => ({
+            id: credit.id,
+            title: credit.title || '',
+            character: credit.character || '',
+            poster_path: credit.poster_path,
+            release_date: credit.release_date || null,
+            vote_average: credit.vote_average
+          })),
+          tvCredits: tvCredits.cast.map((credit: TVCreditResponse) => ({
+            id: credit.id,
+            name: credit.name || '',
+            character: credit.character || '',
+            poster_path: credit.poster_path,
+            first_air_date: credit.first_air_date || null,
+            vote_average: credit.vote_average
+          }))
         })
       } catch (err) {
         console.error('Error fetching person details:', err)
@@ -85,22 +123,15 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     )
   }
 
-  const { details, movieCredits, tvCredits } = data
-
   return (
-    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-24">
-      <div className="container mx-auto px-4 pt-10">
-        {/* En-tête avec photo et informations */}
-        <motion.div
-          className="grid gap-8 md:grid-cols-[300px,1fr]"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          {/* Photo */}
-          <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
+    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid gap-8 md:grid-cols-[300px,1fr]">
+          {/* Photo de profil */}
+          <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
             <Image
-              src={details.profile_path ? `https://image.tmdb.org/t/p/w500${details.profile_path}` : '/placeholder-actor.png'}
-              alt={details.name}
+              src={data.details.profile_path ? `https://image.tmdb.org/t/p/w500${data.details.profile_path}` : '/placeholder-person.png'}
+              alt={data.details.name}
               fill
               className="object-cover"
             />
@@ -109,64 +140,73 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {/* Informations */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-4xl font-bold text-white">{details.name}</h1>
-              {details.birthday && (
-                <p className="mt-2 text-gray-400">
-                  Né(e) le {new Date(details.birthday).toLocaleDateString('fr-FR')}
-                  {details.place_of_birth && ` à ${details.place_of_birth}`}
-                </p>
+              <h1 className="text-3xl font-bold text-white mb-4">{data.details.name}</h1>
+              {data.details.biography && (
+                <div className="space-y-2">
+                  <h2 className="text-xl font-semibold text-white">Biographie</h2>
+                  <p className="text-gray-300">{data.details.biography}</p>
+                </div>
               )}
             </div>
 
-            {details.biography && (
-              <div>
-                <h2 className="text-xl font-semibold text-white mb-2">Biographie</h2>
-                <p className="text-gray-300 whitespace-pre-line">{details.biography}</p>
-              </div>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {data.details.birthday && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Date de naissance</h3>
+                  <p className="text-gray-300">
+                    {new Date(data.details.birthday).toLocaleDateString('fr-FR')}
+                  </p>
+                </div>
+              )}
+              {data.details.place_of_birth && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Lieu de naissance</h3>
+                  <p className="text-gray-300">{data.details.place_of_birth}</p>
+                </div>
+              )}
+            </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Filmographie */}
-        <div className="mt-16 space-y-12">
-          {movieCredits.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold text-white mb-6">Films</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {movieCredits.map((movie) => (
-                  <FilmographyCard
-                    key={`${movie.id}-${movie.character}`}
-                    id={movie.id}
-                    title={movie.title}
-                    character={movie.character}
-                    posterPath={movie.poster_path}
-                    voteAverage={movie.vote_average}
-                    type="movie"
-                  />
-                ))}
-              </div>
-            </section>
-          )}
+        {data.movieCredits.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-white mb-6">Films</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {data.movieCredits.map((movie) => (
+                <FilmographyCard
+                  key={movie.id}
+                  id={movie.id}
+                  title={movie.title}
+                  character={movie.character}
+                  posterPath={movie.poster_path}
+                  voteAverage={movie.vote_average}
+                  type="movie"
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
-          {tvCredits.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold text-white mb-6">Séries TV</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {tvCredits.map((show) => (
-                  <FilmographyCard
-                    key={`${show.id}-${show.character}`}
-                    id={show.id}
-                    title={show.name}
-                    character={show.character}
-                    posterPath={show.poster_path}
-                    voteAverage={show.vote_average}
-                    type="tv"
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
+        {/* Séries TV */}
+        {data.tvCredits.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-white mb-6">Séries TV</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {data.tvCredits.map((show) => (
+                <FilmographyCard
+                  key={show.id}
+                  id={show.id}
+                  title={show.name}
+                  character={show.character}
+                  posterPath={show.poster_path}
+                  voteAverage={show.vote_average}
+                  type="tv"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   )

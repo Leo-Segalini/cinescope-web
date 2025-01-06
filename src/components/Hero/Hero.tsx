@@ -9,7 +9,7 @@ import { WatchProvidersResponse } from '@/types/tmdb'
 // Props du composant Hero
 interface HeroProps {
   title: string                    // Titre du film/série
-  overview: string                 // Description du film/série
+  overview: string | null          // Description du film/série
   backdropPath: string | null      // Chemin de l'image de fond
   type: 'movie' | 'tv'            // Type de contenu (film ou série)
   id: number                      // Identifiant unique

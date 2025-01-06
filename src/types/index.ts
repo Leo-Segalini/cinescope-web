@@ -3,8 +3,8 @@ export interface Movie {
   title: string
   poster_path: string | null
   backdrop_path: string | null
-  overview: string
-  release_date: string
+  overview: string | null
+  release_date: string | null
   vote_average: number
   genre_ids?: number[]
 }
@@ -14,8 +14,8 @@ export interface TVShow {
   name: string
   poster_path: string | null
   backdrop_path: string | null
-  overview: string
-  first_air_date: string
+  overview: string | null
+  first_air_date: string | null
   vote_average: number
   genre_ids?: number[]
 }

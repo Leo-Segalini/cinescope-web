@@ -116,12 +116,11 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
           {suggestions.map((item, index) => {
             const isMovie = 'title' in item
             const title = isMovie ? item.title : item.name
-            const year = new Date(
-              isMovie ? item.release_date : item.first_air_date
-            ).getFullYear()
+            const date = isMovie ? item.release_date : item.first_air_date
+            const year = date ? new Date(date).getFullYear() : null
             const posterPath = item.poster_path
               ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
-              : '/images/no-poster.png'
+              : '/placeholder-movie.png'
 
             return (
               <div
@@ -146,7 +145,7 @@ export const SearchBar = ({ onSearch, onSubmit, suggestions, setSuggestions }: S
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{title}</p>
                   <p className="text-sm text-gray-400">
-                    {year} • {isMovie ? 'Film' : 'Série'}
+                    {year ? `${year} • Film` : 'Série'}
                   </p>
                 </div>
                 {item.vote_average > 0 && (

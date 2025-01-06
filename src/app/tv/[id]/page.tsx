@@ -7,11 +7,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { TMDBImage } from '@/components/common/TMDBImage'
 import Link from 'next/link'
 import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
-import { VideoSection } from '@/components/VideoSection/VideoSection'
 import { StreamingInfo } from '@/components/StreamingInfo/StreamingInfo'
 import { SeasonList } from '@/components/SeasonList/SeasonList'
 import { TVShow } from '@/types/tmdb'
 import clsx from 'clsx'
+import { MediaActions } from '@/components/MediaActions/MediaActions'
+import { Reviews } from '@/components/Reviews/Reviews'
+import { Cast } from '@/components/Cast/Cast'
+import { SimilarMedia } from '@/components/SimilarMedia/SimilarMedia'
+import { VideoGallery } from '@/components/VideoGallery/VideoGallery'
 
 type Section = 'description' | 'videos' | 'cast' | 'similar' | 'seasons'
 
@@ -26,6 +30,8 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
   useEffect(() => {
     async function fetchTVShowDetails() {
       try {
+        setIsLoading(true)
+        setError(null)
         const [details, similar] = await Promise.all([
           tmdbClient.getTVShowDetails(Number(resolvedParams.id)),
           tmdbClient.getSimilarTVShows(Number(resolvedParams.id))
@@ -40,13 +46,22 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
         setSimilarShows(sortedShows)
       } catch (err) {
         console.error('Error fetching TV show details:', err)
-        setError('Une erreur est survenue lors du chargement des détails')
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError('Une erreur est survenue lors du chargement des détails')
+        }
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchTVShowDetails()
+    if (!isNaN(Number(resolvedParams.id))) {
+      fetchTVShowDetails()
+    } else {
+      setError('ID de série invalide')
+      setIsLoading(false)
+    }
   }, [resolvedParams.id])
 
   if (isLoading) {
@@ -59,21 +74,27 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
 
   if (error || !tvShow) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <div className="text-white text-2xl">{error || 'Série non trouvée'}</div>
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex flex-col items-center justify-center gap-4">
+        <div className="text-white text-2xl text-center">{error || 'Série non trouvée'}</div>
+        <Link 
+          href="/tv"
+          className="px-6 py-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Retour aux séries
+        </Link>
       </div>
     )
   }
 
   const providers = tvShow['watch/providers']
 
-  const navigationItems: { id: Section; label: string; show: boolean }[] = [
-    { id: 'description', label: 'Description', show: true },
-    { id: 'videos', label: 'Bande-annonce', show: tvShow.videos?.results.some(v => v.type === 'Trailer') ?? false },
-    { id: 'cast', label: 'Acteurs', show: (tvShow.credits?.cast?.length ?? 0) > 0 },
-    { id: 'seasons', label: 'Saisons', show: (tvShow.seasons?.length ?? 0) > 0 },
-    { id: 'similar', label: 'Vous pourriez aimer', show: similarShows.length > 0 }
-  ]
+  const sections = [
+    { id: 'description' as const, label: 'Description', show: true },
+    { id: 'videos' as const, label: 'Vidéos', show: tvShow.videos?.results && tvShow.videos.results.length > 0 },
+    { id: 'cast' as const, label: 'Distribution', show: tvShow.credits?.cast && tvShow.credits.cast.length > 0 },
+    { id: 'seasons' as const, label: 'Saisons', show: tvShow.seasons && tvShow.seasons.length > 0 },
+    { id: 'similar' as const, label: 'Séries similaires', show: tvShow.similar?.results && tvShow.similar.results.length > 0 }
+  ] as const
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
@@ -140,14 +161,18 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
                   </div>
                 </div>
 
-                {providers && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-4">Où regarder ?</h3>
-                    <StreamingInfo
-                      providers={providers}
-                    />
-                  </div>
-                )}
+                <div className="flex flex-col gap-4">
+                  <MediaActions mediaId={tvShow.id} mediaType="tv" />
+
+                  {providers && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4">Où regarder ?</h3>
+                      <StreamingInfo
+                        providers={providers}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -158,7 +183,7 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
       <div className="sticky top-0 bg-black/80 backdrop-blur-sm z-10 border-b border-white/10">
         <div className="container mx-auto px-4">
           <nav className="flex flex-wrap gap-4 md:gap-8">
-            {navigationItems.filter(item => item.show).map((item) => (
+            {sections.filter(item => item.show).map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
@@ -221,47 +246,9 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
             </motion.div>
           )}
 
-          {activeSection === 'videos' && tvShow.videos?.results && (
-            <motion.div
-              key="videos"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <VideoSection videos={tvShow.videos.results} />
-            </motion.div>
-          )}
+          {activeSection === 'videos' && <VideoGallery videos={tvShow?.videos?.results || []} />}
 
-          {activeSection === 'cast' && tvShow.credits?.cast && (
-            <motion.div
-              key="cast"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-            >
-              {tvShow.credits.cast.slice(0, 12).map((actor) => (
-                <Link href={`/person/${actor.id}`} key={actor.id}>
-                  <motion.div
-                    className="group"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
-                      <TMDBImage
-                        path={actor.profile_path}
-                        alt={actor.name}
-                        fill
-                        type="profile"
-                        className="object-cover transition-transform group-hover:scale-110"
-                      />
-                    </div>
-                    <h3 className="font-medium text-white truncate">{actor.name}</h3>
-                    <p className="text-sm text-gray-400 truncate">{actor.character}</p>
-                  </motion.div>
-                </Link>
-              ))}
-            </motion.div>
-          )}
+          {activeSection === 'cast' && <Cast cast={tvShow?.credits?.cast || []} />}
 
           {activeSection === 'seasons' && tvShow.seasons && (
             <motion.div
@@ -270,49 +257,18 @@ export default function TVShowPage({ params }: { params: Promise<{ id: string }>
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <SeasonList seasons={tvShow.seasons} tvShowId={tvShow.id} />
+              <SeasonList
+                seasons={tvShow.seasons.map(season => ({
+                  ...season,
+                  vote_average: 0
+                }))}
+                tvShowId={tvShow.id}
+              />
             </motion.div>
           )}
 
-          {activeSection === 'similar' && similarShows.length > 0 && (
-            <motion.div
-              key="similar"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-            >
-              {similarShows.slice(0, 12).map((show) => (
-                <Link href={`/tv/${show.id}`} key={show.id}>
-                  <motion.div
-                    className="group"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
-                      <TMDBImage
-                        path={show.poster_path}
-                        alt={show.name}
-                        fill
-                        type="poster"
-                        className="object-cover transition-transform group-hover:scale-110"
-                      />
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <RatingCircle rating={show.vote_average} size="sm" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="font-medium text-white truncate">{show.name}</h3>
-                      {show.first_air_date && (
-                        <p className="text-sm text-gray-400">
-                          {new Date(show.first_air_date).getFullYear()}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
-            </motion.div>
-          )}
+          {activeSection === 'similar' && <SimilarMedia media={similarShows} type="tv" />}
+          <Reviews mediaId={tvShow?.id || 0} mediaType="tv" />
         </AnimatePresence>
       </div>
     </main>

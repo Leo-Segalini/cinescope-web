@@ -62,10 +62,11 @@ export const MediaGrid = ({ items = [] }: MediaGridProps) => {
       {items.map((item) => (
         <motion.div key={item.id} variants={itemVariants}>
           <MediaCard
+            key={item.id}
             id={item.id}
             title={'title' in item ? item.title : item.name}
             posterPath={item.poster_path}
-            releaseDate={'release_date' in item ? item.release_date : item.first_air_date}
+            releaseDate={'release_date' in item ? item.release_date ?? undefined : item.first_air_date ?? undefined}
             voteAverage={item.vote_average}
             type={'title' in item ? 'movie' : 'tv'}
           />

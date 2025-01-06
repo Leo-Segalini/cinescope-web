@@ -49,9 +49,9 @@ export const TMDBImage = ({
       return
     }
 
-    // Construit l'URL de l'image avec la taille optimale
+    // Construit l'URL de l'image avec le token d'accès
     const baseUrl = 'https://image.tmdb.org/t/p/'
-    setImageUrl(`${baseUrl}${size}${path}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`)
+    setImageUrl(`${baseUrl}${size}${path}`)
   }, [path, size, type])
 
   const handleError = () => {

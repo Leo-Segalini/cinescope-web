@@ -5,35 +5,33 @@ import { tmdbClient } from '@/services/tmdb/client'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
 import Link from 'next/link'
-
-interface Episode {
-  id: number
-  name: string
-  overview: string
-  still_path: string | null
-  air_date: string
-  episode_number: number
-  vote_average: number
-  guest_stars?: {
-    id: number
-    name: string
-    character: string
-    profile_path: string | null
-  }[]
-}
+import { RatingCircle } from '@/components/RatingCircle/RatingCircle'
 
 interface SeasonDetails {
   id: number
   name: string
   overview: string
   poster_path: string | null
-  air_date: string
+  air_date: string | null
   episode_count: number
   season_number: number
+  episodes: {
+    id: number
+    name: string
+    overview: string
+    still_path: string | null
+    air_date: string | null
+    episode_number: number
+    vote_average: number
+    guest_stars: {
+      id: number
+      name: string
+      character: string
+      profile_path: string | null
+    }[]
+  }[]
   vote_average: number
-  episodes: Episode[]
 }
 
 export default function SeasonPage({ params }: { params: Promise<{ id: string; seasonNumber: string }> }) {
@@ -49,7 +47,14 @@ export default function SeasonPage({ params }: { params: Promise<{ id: string; s
           Number(resolvedParams.id),
           Number(resolvedParams.seasonNumber)
         )
-        setSeason(details)
+        setSeason({
+          ...details,
+          vote_average: details.episodes.reduce((acc, episode) => acc + episode.vote_average, 0) / details.episodes.length,
+          episodes: details.episodes.map(episode => ({
+            ...episode,
+            guest_stars: episode.guest_stars ?? []
+          }))
+        })
       } catch (err) {
         console.error('Error fetching season details:', err)
         setError('Une erreur est survenue lors du chargement des détails')
